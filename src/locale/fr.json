@@ -1,0 +1,57 @@
+{
+  "_level":"niveau",
+  "_price":"prix",
+  "_cps":"cps",
+  "_cpm":"cpm",
+  "_cookie":"cookie",
+  "_cookies":"cookies",
+  "_nocookies":"{0} tu n'as pas assez de cookies...",
+  "_notaffordable":"trop cher encore",
+
+  "command_buy":"acheter",
+  "command_buy_description":"Utilise pour acheter des structures qui te donneras CPS\nÉcrire *{0}{1}* pour voir la liste des bâtiments \nÉcrire *{0}{1} nombre* pour acheter un bâtiment",
+  "command_deleteuser":"supprimerutilisateur",
+  "command_deleteuser_description":"Enlèves toi de la base de donnée du jeu",
+  "command_error":"erreur",
+  "command_error_description":"Défaut message d'erreur à cause de commandes inconnues",
+  "command_help":"aide",
+  "command_help_description":"Utilise pour récupérer la liste des commandes",
+  "command_info":"info",
+  "command_info_description":"Utilise pour récupérer le profil et les informations de l'utilisateur",
+  "command_upgrade":"amélioration",
+  "command_upgrade_description":"Utilise pour acheter des améliorations qui peuvent t'améliorer de différentes manières\nÉcrire *{0}{1}* pour voir la liste des améliorations\nÉcrire *{0}{1} nombre* pour acheter une amélioration",
+
+  "item_homeless":"sans abris",
+  "item_shelter":"abris",
+  "item_appartment":"appartement",
+  "item_house":"maison",
+  "item_palace":"palace",
+  "item_bigmama":"big mama",
+
+  "item_+10%cps":"+10% CPS",
+  "item_+10%cpm":"+10% CPM",
+  "item_+10%costreduction":"+10% Coût réduction",
+
+  "buy_list":"liste des bâtiments",
+  "buy_levelUp":"tu as amélioré ton bâtiment!",
+  "buy_acquire":"tu as acheté un bâtiment {0}!",
+  "buy_noexists":"ce bâtiment n'existe pas",
+  "buy_building":"acheter bâtiment",
+
+  "upgrade_list":"liste des améliorations",
+  "upgrade_acquire":"tu as acheté une information {0}!",
+  "upgrade_buy":"acheter améliorations",
+  "upgrade_noexists":"cette amélioration n'existe pas",
+
+  "deleteuser_title":"supprime utilisateur",
+  "deleteuser_message":"utilisateur supprimé avec succès",
+
+  "error_title":"commande inconnue",
+  "error_message":"s'il-te-plaît écrit {0}{1} pour voir la liste des commandes",
+
+  "help_title":"aide",
+  "help_message":"quelqu'un écrit une description ici s'il-te-plaît",
+
+  "info_title":"information du joueur",
+  "info_message":"tu as {0} cookies\nCPS: {1}\nCPM: {2}"
+}

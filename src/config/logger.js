@@ -1,0 +1,35 @@
+{
+  "level":3,
+  "maxTrace":1,
+  "style":{
+     "type":{
+        "reset":"\u001b[0m",
+        "bright":"\u001b[1m",
+        "dim":"\u001b[2m",
+        "underscore":"\u001b[4m",
+        "blink":"\u001b[5m",
+        "reverse":"\u001b[7m",
+        "hidden":"\u001b[8m"
+     },
+     "font":{
+        "black":"\u001b[30m",
+        "red":"\u001b[31m",
+        "green":"\u001b[32m",
+        "yellow":"\u001b[33m",
+        "blue":"\u001b[34m",
+        "magenta":"\u001b[35m",
+        "cyan":"\u001b[36m",
+        "white":"\u001b[37m"
+     },
+     "background":{
+        "back":"\u001b[40m",
+        "red":"\u001b[41m",
+        "green":"\u001b[42m",
+        "yellow":"\u001b[43m",
+        "blue":"\u001b[44m",
+        "magenta":"\u001b[45m",
+        "cyan":"\u001b[46m",
+        "white":"\u001b[47m"
+     }
+  }
+}

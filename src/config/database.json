@@ -1,0 +1,11 @@
+{
+  "enabled":true,
+  "options":[{
+    "connectionLimit": 100,
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "fff",
+    "debug": false
+  }]
+}

@@ -1,0 +1,57 @@
+{
+  "_level":"nivel",
+  "_price":"precio",
+  "_cps":"gps",
+  "_cpm":"gpm",
+  "_cookie":"galleta",
+  "_cookies":"galletas",
+  "_nocookies":"{0} no tienes suficientes galletas...",
+  "_notaffordable":"no se puede comprar todavia",
+
+  "command_buy":"comprar",
+  "command_buy_description":"usalo para comprar estructuras que te daran GPS\nEscribe *{0}{1}* para ver la lista de estructuras\nEscribe *{0}{1} numero* para comprar una estructura",
+  "command_deleteuser":"eliminarusuario",
+  "command_deleteuser_description":"te eliminas de la base de datos del juego",
+  "command_error":"error",
+  "command_error_description":"mensaje de error predefinido para comandos desconocidos",
+  "command_help":"ayuda",
+  "command_help_description":"usalo para conseguir la lista de comandos",
+  "command_info":"info",
+  "command_info_description":"usalo para conseguir la informacion de tu perfil",
+  "command_upgrade":"mejora",
+  "command_upgrade_description":"usalo para comprar mejoras que te ayudaran de diferentes formas\nEscribe *{0}{1}* para ver la lista de mejoras\nEscribe *{0}{1} numero* para comprar una mejora",
+
+  "item_homeless":"sin hogar",
+  "item_shelter":"asilo",
+  "item_appartment":"apartamento",
+  "item_house":"casa",
+  "item_palace":"palacio",
+  "item_bigmama":"big mama",
+
+  "item_+10%cps":"+10% GPS",
+  "item_+10%cpm":"+10% GPM",
+  "item_+10%costreduction":"+10% Reduccion de costos",
+
+  "buy_list":"lista de estructuras",
+  "buy_levelup":"mejoraste tu estructura!",
+  "buy_acquire":"compraste una estructura {0}!",
+  "buy_noexists":"esta estructura no existe",
+  "buy_building":"compra estructuras",
+
+  "upgrade_list":"lista de mejoras",
+  "upgrade_acquire":"compraste una mejora {0}!",
+  "upgrade_buy":"compra mejoras",
+  "upgrade_noexists":"esta mejora no existe",
+
+  "deleteuser_title":"eliminar usuario",
+  "deleteuser_message":"usuario eliminado exitosamente",
+
+  "error_title":"comando desconocido",
+  "error_message":"por favor escriba {0}{1} para ver la lista de comandos",
+
+  "help_title":"ayuda",
+  "help_message":"alguien escriba una descripcion aqui",
+
+  "info_title":"informacion del jugador",
+  "info_message":"tu tienes {0} galletas\nGPS: {1}\nGPM: {2}"
+}
