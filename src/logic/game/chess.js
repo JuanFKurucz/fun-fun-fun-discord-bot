@@ -127,6 +127,10 @@ class Chess {
         case "q":
           break;
         case "n":
+          if( (Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==2) ||
+              (Math.abs(from[0]-to[0])==2 && Math.abs(from[1]-to[1])==1)){
+                move = true;
+          }
           break;
         case "b":
           break;
