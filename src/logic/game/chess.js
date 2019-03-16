@@ -154,48 +154,6 @@ class Chess {
           move = Math.abs(from[0]-to[0])<=1 && Math.abs(from[1]-to[1])<=1;
           break;
         case "q":
-          break;
-        case "n": //done & tested
-          if( (Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==2) ||
-              (Math.abs(from[0]-to[0])==2 && Math.abs(from[1]-to[1])==1)){
-                move = true;
-          }
-          break;
-        case "b":
-          if(from[0]<to[0] && from[1]<to[1]){
-            direction="diagonalRD";
-          } else if(from[0]>to[0] && from[1]<to[1]){
-            direction="diagonalLD";
-          } else if(from[0]<to[0] && from[1]>to[1]){
-            direction="diagonalRU";
-          } else if(from[0]>to[0] && from[1]>to[1]){
-            direction="diagonalLU";
-          }
-          if(direction!=""){
-            path = this.generateCoordinates(direction,from,to);
-            var pathOk = true;
-            console.log(path);
-            if(path.length===0){
-              pathOk=false;
-            } else {
-              for(var i in path){
-                var _cords = this.getCord(path[i]);
-                var [_cordLetter,_cordNumber] = _cords;
-                var _currentPiece = this.getPiece(_cordLetter,_cordNumber);
-                if( (i==path.length-1 && _currentPiece.team != this.players[this.currentTurn].color) ||
-                    _currentPiece.text == ""
-                    ){
-
-                } else {
-                  pathOk=false;
-                  break;
-                }
-              }
-            }
-            move=pathOk;
-          }
-          break;
-        case "r":
           if(Math.abs(from[0]-to[0])==0 && Math.abs(from[1]-to[1])!=0){
             if(from[1]>to[1]){
               direction="up";
@@ -208,29 +166,46 @@ class Chess {
             } else {
               direction="right";
             }
+          } else if(from[0]<to[0] && from[1]<to[1]){
+            direction="diagonalRD";
+          } else if(from[0]>to[0] && from[1]<to[1]){
+            direction="diagonalLD";
+          } else if(from[0]<to[0] && from[1]>to[1]){
+            direction="diagonalRU";
+          } else if(from[0]>to[0] && from[1]>to[1]){
+            direction="diagonalLU";
           }
-          if(direction!=""){
-            path = this.generateCoordinates(direction,from,to);
-            var pathOk = true;
-            console.log(path);
-            if(path.length===0){
-              pathOk=false;
+          break;
+        case "n": //done & tested
+          if( (Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==2) ||
+              (Math.abs(from[0]-to[0])==2 && Math.abs(from[1]-to[1])==1)){
+                move = true;
+          }
+          break;
+        case "b": //done & tested
+          if(from[0]<to[0] && from[1]<to[1]){
+            direction="diagonalRD";
+          } else if(from[0]>to[0] && from[1]<to[1]){
+            direction="diagonalLD";
+          } else if(from[0]<to[0] && from[1]>to[1]){
+            direction="diagonalRU";
+          } else if(from[0]>to[0] && from[1]>to[1]){
+            direction="diagonalLU";
+          }
+          break;
+        case "r":  //done & tested
+          if(Math.abs(from[0]-to[0])==0 && Math.abs(from[1]-to[1])!=0){
+            if(from[1]>to[1]){
+              direction="up";
             } else {
-              for(var i in path){
-                var _cords = this.getCord(path[i]);
-                var [_cordLetter,_cordNumber] = _cords;
-                var _currentPiece = this.getPiece(_cordLetter,_cordNumber);
-                if( (i==path.length-1 && _currentPiece.team != this.players[this.currentTurn].color) ||
-                    _currentPiece.text == ""
-                    ){
-
-                } else {
-                  pathOk=false;
-                  break;
-                }
-              }
+              direction="down";
             }
-            move=pathOk;
+          } else if(Math.abs(from[0]-to[0])!=0 && Math.abs(from[1]-to[1])==0){
+            if(from[0]>to[0]){
+              direction="left";
+            } else {
+              direction="right";
+            }
           }
           break;
         case "p": //done & tested
@@ -249,6 +224,28 @@ class Chess {
           }
           break;
       }
+    }
+    if(direction!=""){
+      path = this.generateCoordinates(direction,from,to);
+      var pathOk = true;
+      if(path.length===0){
+        pathOk=false;
+      } else {
+        for(var i in path){
+          var _cords = this.getCord(path[i]);
+          var [_cordLetter,_cordNumber] = _cords;
+          var _currentPiece = this.getPiece(_cordLetter,_cordNumber);
+          if( (i==path.length-1 && _currentPiece.team != this.players[this.currentTurn].color) ||
+              _currentPiece.text == ""
+              ){
+
+          } else {
+            pathOk=false;
+            break;
+          }
+        }
+      }
+      move=pathOk;
     }
     if(move){
       let resultToCord = to[0]+8*to[1];
@@ -309,11 +306,11 @@ class Chess {
       "br","bn","","bq","bk","bb","bn","br",
       "","bp","bp","bp","bp","bp","bp","bp",
       "","","","","","","","",
-      "","","","","bb","","","",
-      "","","","","wb","","","",
+      "","","","","bq","","","",
+      "","","","","wq","","","",
       "","","","","","","","",
       "","wp","wp","wp","wp","wp","wp","wp",
-      "","wn","","wq","wk","wb","wn","wr"
+      "","wn","","","wk","wb","wn","wr"
     ];
 
     await this.draw();
