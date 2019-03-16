@@ -39,11 +39,201 @@ class Chess {
     this.start();
   }
 
+
+  getPiece(cordLetter,cordNumber){
+    const calc = cordLetter+8*cordNumber;
+    const text = this.state[calc];
+    const team = (text.length) ? text[0] : "";
+    const type = (text.length) ? text[1] : "";
+    const o = {
+      text,
+      team,
+      type,
+      calc
+    };
+    console.log(o);
+    return o;
+  }
+
+  kingInCheck(team){
+    return false;
+  }
+
+  generateCoordinates(direction,from,to){
+    /*
+    from:[cordLetter,cordNumber]
+    to:[cordLetter,cordNumber]
+    */
+    const coordinates = [];
+    let i = 0;
+    switch(direction){
+      case "up":
+        for(i=from[1]+1;i>=to[1];i--){
+          coordinates.push(String.fromCharCode(from[0])+""+i);
+        }
+        break;
+      case "down":
+        for(i=from[1]+1;i<=to[1];i++){
+          coordinates.push(String.fromCharCode(from[0])+""+i);
+        }
+        break;
+      case "left":
+        for(i=from[0]+1;i>=to[0];i--){
+          coordinates.push(String.fromCharCode(i)+""+from[1]);
+        }
+        break;
+      case "right":
+        for(i=from[0]+1;i<=to[0];i++){
+          coordinates.push(String.fromCharCode(i)+""+from[1]);
+        }
+        break;
+      case "diagonalLU":
+        break;
+      case "diagonalLD":
+        break;
+      case "diagonalRU":
+        break;
+      case "diagonalRD":
+        break;
+    }
+  }
+
+  getCord(text){
+    const cords = (text.toLowerCase()).split("");
+    const cordLetter = (isNaN(cords[0])) ? parseInt(cords[0].charCodeAt(0))-97 : parseInt(cords[1].charCodeAt(0))-97;
+    const cordNumber = (!isNaN(cords[0])) ? parseInt(cords[0])-1 : parseInt(cords[1])-1;
+    return [cordLetter,cordNumber];
+  }
+
+  tryMakeMove(piece, from, to){
+    /*
+    from:[cordLetter,cordNumber]
+    to:[cordLetter,cordNumber]
+    */
+    const pieceData = piece.split("");
+    const type = pieceData[1];
+    const team = pieceData[0];
+    const fieldTo = this.getPiece(to[0],to[1]);
+    let move = false;
+    let direction = "";
+    let sampleState = [...this.state];
+    let path=[];
+
+    if(fieldTo.team != this.players[this.currentTurn].color){
+      switch(type){
+        case "k":
+          move = Math.abs(from[0]-to[0])<=1 && Math.abs(from[1]-to[1])<=1;
+          break;
+        case "q":
+          break;
+        case "n":
+          break;
+        case "b":
+          break;
+        case "r":
+          if(Math.abs(from[0]-to[0])==0 && Math.abs(from[1]-to[1])!=0){
+            if(from[1]>to[1]){
+              direction="up";
+            } else {
+              direction="down";
+            }
+          } else if(Math.abs(from[0]-to[0])!=0 && Math.abs(from[1]-to[1])==0){
+            if(from[0]>to[0]){
+              direction="right";
+            } else {
+              direction="left";
+            }
+          }
+          if(direction!=""){
+            path = generateCoordinates(direction,from,to);
+            var pathOk = true;
+            for(var i in path){
+              var _cords = this.getCord(path[i]);
+              var [_cordLetter,_cordNumber] = _cords;
+              var _currentPiece = this.getPiece(_cordLetter,_cordNumber);
+              if( (i==path.length-1 && _currentPiece.team != this.players[this.currentTurn].color) ||
+                  _currentPiece == ""
+                  ){
+
+              } else {
+                pathOk=false;
+                break;
+              }
+            }
+            move=pathOk;
+          }
+          break;
+        case "p":
+          if(Math.abs(from[0]-to[0])==0 && fieldTo.team == ""){
+            var row = (team == "w") ? 6 : 1;
+            var moveOk = (team == "b") ? from[1]<to[1] : to[1]<from[1];
+            if(moveOk){
+              if(from[1] == row && Math.abs(from[1]-to[1])<=2){
+                move = true;
+              } else if(Math.abs(from[1]-to[1])<=1){
+                move = true;
+              }
+            }
+          } else if(Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==1 && fieldTo.team != ""){
+            move = true;
+          }
+          break;
+      }
+    }
+    if(move){
+      let resultToCord = to[0]+8*to[1];
+      let resultFromCord = from[0]+8*from[1];
+      sampleState[resultToCord]=piece;
+      sampleState[resultFromCord]="";
+      if(this.kingInCheck(this.players[this.currentTurn].color,sampleState)){
+        return false;
+      } else {
+        this.state[resultToCord]=piece;
+        this.state[resultFromCord]="";
+      }
+    }
+    return move;
+  }
+
+  async makeMove(player,coordinate,new_coordinate){
+    if(player == this.currentTurn){
+      const currentPlayer = this.players[player];
+      if(coordinate.length==2 && new_coordinate.length==2){
+        const cords = this.getCord(coordinate);
+        const [cordLetter,cordNumber] = cords;
+        const piece = this.getPiece(cordLetter,cordNumber);
+        if(piece.text!=""){
+          if(piece.team == currentPlayer.color){
+            const new_cords = new_coordinate.toLowerCase().split("");
+            const new_cordLetter = (isNaN(new_cords[0])) ? new_cords[0].charCodeAt(0)-97 : new_cords[1].charCodeAt(0)-97;
+            const new_cordNumber = (!isNaN(new_cords[0])) ? parseInt(new_cords[0])-1 : parseInt(new_cords[1])-1;
+            if(this.tryMakeMove(piece.text,[cordLetter,cordNumber],[new_cordLetter,new_cordNumber])){
+              this.currentTurn++;
+              this.currentTurn%=this.players.length;
+              await this.draw();
+              console.log("Next turn");
+            } else {
+              console.log("You can't make this move");
+            }
+          } else {
+            console.log("This piece doens't belong to you");
+          }
+        } else {
+          console.log("Empty field");
+        }
+      } else {
+        console.log("Coordinates are wrong");
+      }
+    } else {
+      console.log("Not your turn");
+    }
+  }
+
   async start(){
     let firstPlayer = Math.floor(Math.random() * this.players.length);
-    this.players[firstPlayer].assignColor("white");
+    this.players[firstPlayer].assignColor("w");
     this.currentTurn=firstPlayer;
-    this.players[(firstPlayer+1)%this.players.length].assignColor("black");
+    this.players[(firstPlayer+1)%this.players.length].assignColor("b");
 
     this.state=[
       "br","bn","bb","bq","bk","bb","bn","br",
@@ -136,6 +326,18 @@ class Chess {
   }
 
   async draw(){
+    let text = "";
+    for(let s in this.state){
+      if(s%8==0){
+        text+="\n";
+      }
+      if(this.state[s]==""){
+        text+="   ";
+      } else {
+        text+=this.state[s]+" ";
+      }
+    }
+    console.log(text);
     this.drawBackGround();
     this.drawCoordinates();
     await this.drawGame(this.state);
@@ -145,5 +347,11 @@ class Chess {
 
 const game = new Chess();
 
+var stdin = process.openStdin();
+
+stdin.addListener("data", function(d) {
+  const message = d.toString().trim().split(" ");
+  game.makeMove(game.currentTurn,message[0]+"",message[1]+"");
+});
 
 module.exports = Chess;
