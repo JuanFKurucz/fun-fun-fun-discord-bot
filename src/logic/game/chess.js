@@ -1,14 +1,4 @@
 "use strict";
-/*
-"br","bn","bb","bq","bk","bb","bn","br",
-"bp","bp","bp","bp","bp","bp","bp","bp",
-"","","","","","","","",
-"","","","","","","","",
-"","","","","","","","",
-"","","","","","","","",
-"wp","wp","wp","wp","wp","wp","wp","wp",
-"wr","wn","wb","wq","wk","wb","wn","wr"
-*/
 const Player = require('./Player');
 const base64ToImage = require('base64-to-image');
 const { createCanvas, loadImage } = require('canvas');
@@ -48,7 +38,6 @@ class Chess {
     this.start();
   }
 
-
   getPiece(cordLetter,cordNumber){
     const calc = cordLetter+8*cordNumber;
     const text = this.state[calc];
@@ -63,7 +52,21 @@ class Chess {
     return o;
   }
 
-  kingInCheck(team){
+  kingInCheck(team,sampleState){
+    let kingCord = null;
+    for(let s in sampleState){
+      if(sampleState[s]==team+"k"){
+        kingCord=[s%8,parseInt(s/8)];
+      }
+    }
+    for(let s in sampleState){
+      if(sampleState[s]!="" && sampleState[s][0] != team){
+        if(this.tryMakeMove(sampleState[s],this.getCord(sampleState[s]),kingCord,sampleState)){
+          return true;
+          break;
+        }
+      }
+    }
     return false;
   }
 
@@ -75,7 +78,6 @@ class Chess {
     const coordinates = [];
     let i = 0;
     let y = 0;
-    console.log(direction,from,to);
     switch(direction){
       case "up":
         for(i=parseInt(from[1]);i>parseInt(to[1]);i--){
@@ -134,18 +136,22 @@ class Chess {
     return [cordLetter,cordNumber];
   }
 
-  tryMakeMove(piece, from, to){
+  tryMakeMove(piece, from, to,state = null){
     /*
     from:[cordLetter,cordNumber]
     to:[cordLetter,cordNumber]
     */
+    let useState = state;
+    if(useState == null){
+      useState = this.state;
+    }
     const pieceData = piece.split("");
     const type = pieceData[1];
     const team = pieceData[0];
     const fieldTo = this.getPiece(to[0],to[1]);
     let move = false;
     let direction = "";
-    let sampleState = [...this.state];
+    let sampleState = [...useState];
     let path=[];
 
     if(fieldTo.team != this.players[this.currentTurn].color){
@@ -255,8 +261,10 @@ class Chess {
       if(this.kingInCheck(this.players[this.currentTurn].color,sampleState)){
         return false;
       } else {
-        this.state[resultToCord]=piece;
-        this.state[resultFromCord]="";
+        if(state == null){
+          this.state[resultToCord]=piece;
+          this.state[resultFromCord]="";
+        }
       }
     }
     return move;
@@ -303,14 +311,14 @@ class Chess {
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
 
     this.state=[
-      "br","bn","","bq","bk","bb","bn","br",
-      "","bp","bp","bp","bp","bp","bp","bp",
+      "br","bn","bb","bq","bk","bb","bn","br",
+      "bp","bp","bp","bp","bp","bp","bp","bp",
       "","","","","","","","",
-      "","","","","bq","","","",
-      "","","","","wq","","","",
       "","","","","","","","",
-      "","wp","wp","wp","wp","wp","wp","wp",
-      "","wn","","","wk","wb","wn","wr"
+      "","","","","","","","",
+      "","","","","","","","",
+      "wp","wp","wp","wp","wp","wp","wp","wp",
+      "wr","wn","wb","wq","wk","wb","wn","wr"
     ];
 
     await this.draw();
@@ -419,8 +427,15 @@ const game = new Chess();
 var stdin = process.openStdin();
 
 stdin.addListener("data", function(d) {
-  const message = d.toString().trim().split(" ");
-  game.makeMove(game.currentTurn,message[0]+"",message[1]+"");
+  const message = d.toString().trim().toLowerCase();
+  const realCords=[];
+  for(let m in message){
+    const ascii = message.charCodeAt(m);
+    if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
+      realCords.push(message[m]);
+    }
+  }
+  game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
 });
 
 module.exports = Chess;
