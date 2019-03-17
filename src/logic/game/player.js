@@ -3,11 +3,11 @@
 class Player {
   constructor(name) {
     this.name=name;
-    this.color="";
+    this.team="";
   }
 
   assignColor(color){
-    this.color=color;
+    this.team=color;
   }
 };
 

@@ -1,27 +1,13 @@
 "use strict";
 const Player = require('./Player');
+const Coordinate = require('./Coordinate');
+const Piece = require('./Piece');
 const base64ToImage = require('base64-to-image');
 const { createCanvas, loadImage } = require('canvas');
 const width=690;
 const height=690;
 const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
-
-const pieces = {
-  "bk":"blackKing",
-  "bq":"blackQueen",
-  "bn":"blackKnight",
-  "bb":"blackBishop",
-  "br":"blackRook",
-  "bp":"blackPawn",
-
-  "wk":"whiteKing",
-  "wq":"whiteQueen",
-  "wn":"whiteKnight",
-  "wb":"whiteBishop",
-  "wr":"whiteRook",
-  "wp":"whitePawn"
-};
 
 class Chess {
   constructor() {
@@ -38,32 +24,26 @@ class Chess {
     this.start();
   }
 
-  getPiece(cordLetter,cordNumber){
-    const calc = cordLetter+8*cordNumber;
-    const text = this.state[calc];
-    const team = (text.length) ? text[0] : "";
-    const type = (text.length) ? text[1] : "";
-    const o = {
-      text,
-      team,
-      type,
-      calc
-    };
-    return o;
+  getPiece(state,coordinate){
+    return new Piece(state,coordinate);
   }
 
-  kingInCheck(team,sampleState){
+  kingInCheck(team,state){
     let kingCord = null;
-    for(let s in sampleState){
-      if(sampleState[s]==team+"k"){
+    for(let s in state){
+      if(state[s]==team+"k"){
         kingCord=[s%8,parseInt(s/8)];
       }
     }
-    for(let s in sampleState){
-      if(sampleState[s]!="" && sampleState[s][0] != team){
-        if(this.tryMakeMove(sampleState[s],this.getCord(sampleState[s]),kingCord,sampleState)){
-          return true;
-          break;
+    if(kingCord){
+      for(let a in Coordinate.all){
+        const cord = this.getCord(Coordinate.all[a]);
+        const piece = this.getPiece(state,cord);
+        if(piece.text!="" && piece.text[0] != team){
+          if(this.tryMakeMove(state,piece,this.getCord(Coordinate.all[a]),kingCord)){
+            return true;
+            break;
+          }
         }
       }
     }
@@ -75,54 +55,98 @@ class Chess {
     from:[cordLetter,cordNumber]
     to:[cordLetter,cordNumber]
     */
-    const coordinates = [];
+    const coordinates = {};
     let i = 0;
     let y = 0;
+
+    let number="";
+    let letter="";
     switch(direction){
       case "up":
-        for(i=parseInt(from[1]);i>parseInt(to[1]);i--){
-          coordinates.push(String.fromCharCode(97+parseInt(from[0]))+""+i);
+        for(i=parseInt(from.cordNumber);i>parseInt(to.cordNumber);i--){
+          number = i;
+          letter = String.fromCharCode(97+parseInt(from.cordLetter));
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
       case "down":
-        for(i=parseInt(from[1])+1;i<=parseInt(to[1]);i++){
-          coordinates.push(String.fromCharCode(97+parseInt(from[0]))+""+(i+1));
+        for(i=parseInt(from.cordNumber)+1;i<=parseInt(to.cordNumber);i++){
+          number = i+1;
+          letter = String.fromCharCode(97+parseInt(from.cordLetter));
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
       case "left":
-        for(i=parseInt(from[0])-1;i>=parseInt(to[0]);i--){
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])-1));
+        console.log(parseInt(from.cordLetter)-1,parseInt(to.cordLetter));
+        for(i=parseInt(from.cordLetter)-1;i>=parseInt(to.cordLetter);i--){
+          number = parseInt(from.cordNumber)-1;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
       case "right":
-        for(i=parseInt(from[0])+1;i<=parseInt(to[0]);i++){
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])+1));
+        for(i=parseInt(from.cordLetter)+1;i<=parseInt(to.cordLetter);i++){
+          number = parseInt(from.cordNumber)+1;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
       case "diagonalLU":
-        for(i=parseInt(from[0])-1;i>=parseInt(to[0]);i--){
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])+y));
+        for(i=parseInt(from.cordLetter)-1;i>=parseInt(to.cordLetter);i--){
+          number = parseInt(from.cordNumber)+y;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
           y--;
         }
         break;
       case "diagonalLD":
         y++;
-        for(i=parseInt(from[0])-1;i>=parseInt(to[0]);i--){
+        for(i=parseInt(from.cordLetter)-1;i>=parseInt(to.cordLetter);i--){
           y++;
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])+y));
+          number = parseInt(from.cordNumber)+y;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
       case "diagonalRU":
-        for(i=parseInt(from[0])+1;i<=parseInt(to[0]);i++){
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])+y));
+        for(i=parseInt(from.cordLetter)+1;i<=parseInt(to.cordLetter);i++){
+          number = parseInt(from.cordNumber)+y;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
           y--;
         }
         break;
       case "diagonalRD":
         y++;
-        for(i=parseInt(from[0])+1;i<=parseInt(to[0]);i++){
+        for(i=parseInt(from.cordLetter)+1;i<=parseInt(to.cordLetter);i++){
           y++;
-          coordinates.push(String.fromCharCode(97+i)+""+(parseInt(from[1])+y));
+          number = parseInt(from.cordNumber)+y;
+          letter = String.fromCharCode(97+i);
+          if(i>=0&&number>=0){
+            const c = new Coordinate(letter+""+number);
+            coordinates[c.text]=c;
+          }
         }
         break;
     }
@@ -130,84 +154,91 @@ class Chess {
   }
 
   getCord(text){
-    const cords = (text.toLowerCase()).split("");
-    const cordLetter = (isNaN(cords[0])) ? parseInt(cords[0].charCodeAt(0))-97 : parseInt(cords[1].charCodeAt(0))-97;
-    const cordNumber = (!isNaN(cords[0])) ? parseInt(cords[0])-1 : parseInt(cords[1])-1;
-    return [cordLetter,cordNumber];
+    return new Coordinate(text);
   }
 
-  tryMakeMove(piece, from, to,state = null){
-    /*
-    from:[cordLetter,cordNumber]
-    to:[cordLetter,cordNumber]
-    */
-    let useState = state;
-    if(useState == null){
-      useState = this.state;
+  endGame(state,team){
+    for(let s in state){
+      if(true){
+
+      }
     }
-    const pieceData = piece.split("");
-    const type = pieceData[1];
-    const team = pieceData[0];
-    const fieldTo = this.getPiece(to[0],to[1]);
+  }
+
+  possibleMoves(state,piece){
+
+    const possibleMoves = [];
+    for(let a in Coordinate.all){
+      const cord = this.getCord(Coordinate.all[a]);
+      if(this.tryMakeMove(state,piece,cord)){
+        possibleMoves.push(Coordinate.all[a]);
+      }
+    }
+    console.log(possibleMoves);
+    return possibleMoves;
+  }
+
+  tryMakeMove(state,piece,to){
+    const currentPlayer = this.players[this.currentTurn];
+    const fieldTo = this.getPiece(state,to);
+    const from = piece.coordinate;
     let move = false;
     let direction = "";
-    let sampleState = [...useState];
-    let path=[];
 
-    if(fieldTo.team != this.players[this.currentTurn].color){
-      switch(type){
+    if(fieldTo.team != currentPlayer.team){
+      switch(piece.type){
         case "k": //done
-          move = Math.abs(from[0]-to[0])<=1 && Math.abs(from[1]-to[1])<=1;
+          move = Math.abs(from.cordLetter-to.cordLetter)<=1 && Math.abs(from.cordNumber-to.cordNumber)<=1;
           break;
         case "q":
-          if(Math.abs(from[0]-to[0])==0 && Math.abs(from[1]-to[1])!=0){
-            if(from[1]>to[1]){
+          if(Math.abs(from.cordLetter-to.cordLetter)==0 && Math.abs(from.cordNumber-to.cordNumber)!=0){
+            if(from.cordNumber>to.cordNumber){
               direction="up";
             } else {
               direction="down";
             }
-          } else if(Math.abs(from[0]-to[0])!=0 && Math.abs(from[1]-to[1])==0){
-            if(from[0]>to[0]){
+          } else if(Math.abs(from.cordLetter-to.cordLetter)!=0 && Math.abs(from.cordNumber-to.cordNumber)==0){
+            if(from.cordLetter>to.cordLetter){
               direction="left";
             } else {
               direction="right";
             }
-          } else if(from[0]<to[0] && from[1]<to[1]){
+          } else if(from.cordLetter<to.cordLetter && from.cordNumber<to.cordNumber){
             direction="diagonalRD";
-          } else if(from[0]>to[0] && from[1]<to[1]){
+          } else if(from.cordLetter>to.cordLetter && from.cordNumber<to.cordNumber){
             direction="diagonalLD";
-          } else if(from[0]<to[0] && from[1]>to[1]){
+          } else if(from.cordLetter<to.cordLetter && from.cordNumber>to.cordNumber){
             direction="diagonalRU";
-          } else if(from[0]>to[0] && from[1]>to[1]){
+          } else if(from.cordLetter>to.cordLetter && from.cordNumber>to.cordNumber){
             direction="diagonalLU";
           }
           break;
         case "n": //done & tested
-          if( (Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==2) ||
-              (Math.abs(from[0]-to[0])==2 && Math.abs(from[1]-to[1])==1)){
+          if( (Math.abs(from.cordLetter-to.cordLetter)==1 && Math.abs(from.cordNumber-to.cordNumber)==2) ||
+              (Math.abs(from.cordLetter-to.cordLetter)==2 && Math.abs(from.cordNumber-to.cordNumber)==1)){
                 move = true;
           }
           break;
         case "b": //done & tested
-          if(from[0]<to[0] && from[1]<to[1]){
+          if(from.cordLetter<to.cordLetter && from.cordNumber<to.cordNumber){
             direction="diagonalRD";
-          } else if(from[0]>to[0] && from[1]<to[1]){
+          } else if(from.cordLetter>to.cordLetter && from.cordNumber<to.cordNumber){
             direction="diagonalLD";
-          } else if(from[0]<to[0] && from[1]>to[1]){
+          } else if(from.cordLetter<to.cordLetter && from.cordNumber>to.cordNumber){
             direction="diagonalRU";
-          } else if(from[0]>to[0] && from[1]>to[1]){
+          } else if(from.cordLetter>to.cordLetter && from.cordNumber>to.cordNumber){
             direction="diagonalLU";
           }
           break;
         case "r":  //done & tested
-          if(Math.abs(from[0]-to[0])==0 && Math.abs(from[1]-to[1])!=0){
-            if(from[1]>to[1]){
+          if(Math.abs(from.cordLetter-to.cordLetter)==0 && Math.abs(from.cordNumber-to.cordNumber)!=0){
+            if(from.cordNumber>to.cordNumber){
               direction="up";
             } else {
               direction="down";
             }
-          } else if(Math.abs(from[0]-to[0])!=0 && Math.abs(from[1]-to[1])==0){
-            if(from[0]>to[0]){
+          } else if(Math.abs(from.cordLetter-to.cordLetter)!=0 && Math.abs(from.cordNumber-to.cordNumber)==0){
+            if(from.cordLetter>to.cordLetter){
               direction="left";
             } else {
               direction="right";
@@ -215,35 +246,33 @@ class Chess {
           }
           break;
         case "p": //done & tested
-          if(Math.abs(from[0]-to[0])==0 && fieldTo.team == ""){
+          if(Math.abs(from.cordLetter-to.cordLetter)==0 && fieldTo.team == ""){
             var row = (team == "w") ? 6 : 1;
-            var moveOk = (team == "b") ? from[1]<to[1] : to[1]<from[1];
+            var moveOk = (team == "b") ? from.cordNumber<to.cordNumber : to.cordNumber<from.cordNumber;
             if(moveOk){
-              if(from[1] == row && Math.abs(from[1]-to[1])<=2){
+              if(from.cordNumber == row && Math.abs(from.cordNumber-to.cordNumber)<=2){
                 move = true;
-              } else if(Math.abs(from[1]-to[1])<=1){
+              } else if(Math.abs(from.cordNumber-to.cordNumber)<=1){
                 move = true;
               }
             }
-          } else if(Math.abs(from[0]-to[0])==1 && Math.abs(from[1]-to[1])==1 && fieldTo.team != ""){
+          } else if(Math.abs(from.cordLetter-to.cordLetter)==1 && Math.abs(from.cordNumber-to.cordNumber)==1 && fieldTo.team != ""){
             move = true;
           }
           break;
       }
     }
     if(direction!=""){
-      path = this.generateCoordinates(direction,from,to);
+      const path = this.generateCoordinates(direction,from,to);
       var pathOk = true;
-      if(path.length===0){
+      if(path.length===0 || !path.hasOwnProperty(to.text)){
         pathOk=false;
       } else {
         for(var i in path){
-          var _cords = this.getCord(path[i]);
-          var [_cordLetter,_cordNumber] = _cords;
-          var _currentPiece = this.getPiece(_cordLetter,_cordNumber);
-          if( (i==path.length-1 && _currentPiece.team != this.players[this.currentTurn].color) ||
-              _currentPiece.text == ""
-              ){
+          var _currentPiece = this.getPiece(state,path[i]);
+          if(
+            (i==path.length-1 && _currentPiece.team != currentPlayer.team) ||
+            _currentPiece.text == "" ){
 
           } else {
             pathOk=false;
@@ -253,36 +282,31 @@ class Chess {
       }
       move=pathOk;
     }
-    if(move){
-      let resultToCord = to[0]+8*to[1];
-      let resultFromCord = from[0]+8*from[1];
-      sampleState[resultToCord]=piece;
-      sampleState[resultFromCord]="";
-      if(this.kingInCheck(this.players[this.currentTurn].color,sampleState)){
-        return false;
-      } else {
-        if(state == null){
-          this.state[resultToCord]=piece;
-          this.state[resultFromCord]="";
-        }
-      }
-    }
+    let resultToCord = to.cordLetter+8*to.cordNumber;
+    let resultFromCord = from.cordLetter+8*from.cordNumber;
+    let sampleState = [...this.state];
+    sampleState[resultToCord]=piece.text;
+    sampleState[resultFromCord]="";
+  //  if(this.kingInCheck(this.players[this.currentTurn].team,sampleState)){
+    //  console.log("King in check");
+    //  return false;
+    //} else {
     return move;
+    //}
   }
 
   async makeMove(player,coordinate,new_coordinate){
     if(player == this.currentTurn){
       const currentPlayer = this.players[player];
       if(coordinate.length==2 && new_coordinate.length==2){
-        const cords = this.getCord(coordinate);
-        const [cordLetter,cordNumber] = cords;
-        const piece = this.getPiece(cordLetter,cordNumber);
+        const cord = this.getCord(coordinate);
+        const piece = this.getPiece(this.state,cord);
         if(piece.text!=""){
-          if(piece.team == currentPlayer.color){
-            const new_cords = new_coordinate.toLowerCase().split("");
-            const new_cordLetter = (isNaN(new_cords[0])) ? new_cords[0].charCodeAt(0)-97 : new_cords[1].charCodeAt(0)-97;
-            const new_cordNumber = (!isNaN(new_cords[0])) ? parseInt(new_cords[0])-1 : parseInt(new_cords[1])-1;
-            if(this.tryMakeMove(piece.text,[cordLetter,cordNumber],[new_cordLetter,new_cordNumber])){
+          if(piece.team == currentPlayer.team){
+            const new_cord = this.getCord(new_coordinate.toLowerCase());
+            if(this.tryMakeMove(this.state,piece,new_cord)){
+              this.state[new_cord.index]=piece.text;
+              this.state[cord.index]="";
               this.currentTurn++;
               this.currentTurn%=this.players.length;
               await this.draw();
@@ -310,7 +334,7 @@ class Chess {
     this.currentTurn=firstPlayer;
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
 
-    this.state=[
+    /*this.state=[
       "br","bn","bb","bq","bk","bb","bn","br",
       "bp","bp","bp","bp","bp","bp","bp","bp",
       "","","","","","","","",
@@ -319,6 +343,17 @@ class Chess {
       "","","","","","","","",
       "wp","wp","wp","wp","wp","wp","wp","wp",
       "wr","wn","wb","wq","wk","wb","wn","wr"
+    ];*/
+
+    this.state=[
+      "","bk","","","bq","","","",
+      "","","","","","","","",
+      "","","","","","","","",
+      "","","","","","","","",
+      "","","","","","","","",
+      "","","","","","","","",
+      "","","","","","","","",
+      "","","","wk","","","",""
     ];
 
     await this.draw();
@@ -388,7 +423,7 @@ class Chess {
       if(state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const image = await this.getImage("images/"+pieces[state[i]]+".png");
+        const image = await this.getImage("images/"+Piece.all[state[i]]+".png");
         ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
         this.save();
       }
@@ -435,7 +470,15 @@ stdin.addListener("data", function(d) {
       realCords.push(message[m]);
     }
   }
-  game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
+  if(realCords.length==2){
+    const cord = game.getCord(realCords[0]+""+realCords[1]);
+    const piece = game.getPiece(game.state,cord);
+    if(piece.text!=""){
+      game.possibleMoves(game.state,piece);
+    }
+  } else {
+    game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
+  }
 });
 
 module.exports = Chess;
