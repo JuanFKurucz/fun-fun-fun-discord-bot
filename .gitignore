@@ -61,3 +61,4 @@ typings/
 .next
 
 output/
+src/logic/game/game.png
