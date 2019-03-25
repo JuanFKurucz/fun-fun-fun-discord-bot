@@ -23,5 +23,8 @@
     "fs": "0.0.1-security",
     "mysql": "^2.16.0",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "jest": "^24.5.0"
   }
 }
