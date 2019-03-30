@@ -202,7 +202,7 @@ class Chess {
 
 const game = new Chess();
 
-async function start(){
+/*async function start(){
   let moves = Data.game;
   for(let d in moves){
     const message = moves[d].toString().trim().toLowerCase();
@@ -221,11 +221,11 @@ async function start(){
   process.exit();
 }
 
-start();
-/*
+start();*/
+
 var stdin = process.openStdin();
 
-stdin.addListener("data", function(d) {
+stdin.addListener("data", async function(d) {
   const message = d.toString().trim().toLowerCase();
   const realCords=[];
   for(let m in message){
@@ -237,12 +237,12 @@ stdin.addListener("data", function(d) {
   if(realCords.length==2){
     const cord = game.board.getCord(realCords[0]+""+realCords[1]);
     const piece = game.board.getPiece(game.state,cord);
-    if(piece.text!=""){
+    if(piece != null && piece.text!=""){
       game.board.possibleMoves(piece);
     }
   } else {
-    game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
+    await game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
   }
-});*/
+});
 
 module.exports = Chess;
