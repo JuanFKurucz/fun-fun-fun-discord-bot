@@ -21,7 +21,6 @@ class Board {
   }
 
   checkMate(team,state){
-    console.log("Team to check",team);
     for(let a in Coordinate.all){
       const cord = this.getCord(Coordinate.all[a]);
       const piece = this.getPiece(cord);

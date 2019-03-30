@@ -53,24 +53,21 @@ class Chess {
   async makeMove(player,coordinate,new_coordinate){
     if(player == this.currentTurn){
       const currentPlayer = this.players[player];
-      console.log(coordinate, new_coordinate);
       if(coordinate.length==2 && new_coordinate.length==2){
         const cord = this.board.getCord(coordinate);
         const piece = this.board.getPiece(cord);
-        //console.log(piece);
         if(piece.text!=""){
           if(piece.team == currentPlayer.team){
             const new_cord = this.board.getCord(new_coordinate.toLowerCase());
             if(this.tryMakeMove(piece,new_cord)){
               this.board.move(piece,new_cord);
               this.nextTurn();
-              console.log("check initial");
               if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
                 if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
                   this.playing=false;
                   console.log("Game ended winner",this.getCurrentPlayer().opponent());
                 } else {
-                  console.log("King in check");
+                  console.log("Next turn: be aware your king is in check");
                 }
               } else {
                 console.log("Next turn");
@@ -89,7 +86,6 @@ class Chess {
           this.playing=false;
         }
       } else {
-        console.log(coordinate,new_coordinate);
         console.log("Coordinates are wrong");
       }
     } else {
@@ -217,7 +213,6 @@ async function start(){
         realCords.push(message[m]);
       }
     }
-    console.log("RealCords:",realCords);
     game.makeMove(game.currentTurn,realCords[0]+""+parseInt(9-parseInt(realCords[1]))+"",realCords[2]+""+parseInt(9-parseInt(realCords[3]))+"");
     if(!game.playing){
       break;
