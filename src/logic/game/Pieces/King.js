@@ -8,8 +8,14 @@ class King extends Piece {
     this.type="k";
   }
 
-  move(board,newCoordinate){
+  normalMove(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
+    return ((newField!== null && newField.team != this.team) || newField === null) &&
+           Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)<=1 &&
+           Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)<=1;
+  }
+
+  move(board,newCoordinate){
     let firstPosition;
     let rookCord=null;
     let rookMovementCord=null;
@@ -32,16 +38,18 @@ class King extends Piece {
     }
     if(rookCord!=null){
       let rook = board.getPiece(board.getCord(rookCord));
-      if(rook != null && rook.move(board,board.getCord(rookMovementCord))){
-        board.move(rook,board.getCord(rookMovementCord));
-        return true;
+      if(rook != null){
+        if(rook.move(board,board.getCord(rookMovementCord))){
+          board.move(rook,board.getCord(rookMovementCord));
+          return true;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        return this.normalMove(board,newCoordinate);
       }
     } else {
-      return newField.team != this.team &&
-             Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)<=1 &&
-             Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)<=1;
+      return this.normalMove(board,newCoordinate);
    }
   }
 }
