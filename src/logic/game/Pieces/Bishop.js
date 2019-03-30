@@ -21,7 +21,7 @@ class Bishop extends Piece {
       direction="diagonalRD";
     }
     if(direction !== ""){
-      return board.clearPath(direction,this.coordinate,newCoordinate);
+      return board.clearPath(this,direction,newCoordinate);
     } else {
       return false;
     }

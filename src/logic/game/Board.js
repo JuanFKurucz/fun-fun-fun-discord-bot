@@ -27,25 +27,34 @@ class Board {
         kingCord=[s%8,parseInt(s/8)];
       }
     }
-    if(kingCord){
+    if(kingCord.length){
       const kingCoordinate = this.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
       for(let a in Coordinate.all){
         const cord = this.getCord(Coordinate.all[a]);
         const piece = this.getPiece(cord);
-        if(piece.text!="" && piece.text[0] != team){
-          if(piece.move(this,kingCoordinate)){
+        if(piece !== null && piece.team != team){
+          const newBoard = new Board(this.parent,state);
+          if(piece.move(newBoard,kingCoordinate)){
             return true;
-            break;
           }
         }
       }
+      return false;
     }
-    return false;
+    return true;
   }
 
-  move(piece,new_cord){
-    this.state[new_cord.index]=piece.print();
-    this.state[piece.coordinate.index]="";
+  cloneState(){
+    return this.state.slice(0);
+  }
+
+  move(piece,new_cord,state=null){
+    if(state==null){
+      state = this.state;
+    }
+    state[new_cord.index]=piece.print();
+    state[piece.coordinate.index]="";
+    return state;
   }
 
   cordInArray(array,coordinate){
@@ -175,8 +184,8 @@ class Board {
     return coordinates;
   }
 
-  clearPath(direction,from,to){
-    const path = this.generateCoordinates(direction,from,to);
+  clearPath(piece,direction,to){
+    const path = this.generateCoordinates(direction,piece.coordinate,to);
     var pathOk = true;
     if(path.length===0 || !this.cordInArray(path,to)){
       pathOk=false;
@@ -186,7 +195,7 @@ class Board {
         var _currentPiece = this.getPiece(path[i]);
         if(_currentPiece){
           if(
-            (i==path.length-1 && _currentPiece.team != this.parent.players[this.parent.currentTurn].team) ||
+            (i==path.length-1 && _currentPiece.team != piece.team) ||
             _currentPiece.text == "" ){
 
           } else {

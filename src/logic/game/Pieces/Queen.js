@@ -35,7 +35,7 @@ class Queen extends Piece {
     }
 
     if(direction !== ""){
-      return board.clearPath(direction,this.coordinate,newCoordinate);
+      return board.clearPath(this,direction,newCoordinate);
     } else {
       return false;
     }

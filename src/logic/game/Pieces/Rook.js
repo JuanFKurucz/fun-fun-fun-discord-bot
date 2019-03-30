@@ -30,10 +30,8 @@ class Rook extends Piece {
         direction="left";
       }
     }
-    console.log(direction);
-console.log(this.coordinate,newCoordinate);
     if(direction !== ""){
-      return board.clearPath(direction,this.coordinate,newCoordinate);
+      return board.clearPath(this,direction,newCoordinate);
     } else {
       return false;
     }

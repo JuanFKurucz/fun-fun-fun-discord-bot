@@ -34,19 +34,19 @@ class Chess {
   }
 
   tryMakeMove(piece,to){
-    return piece.move(this.board,to);
-
-    /*let resultToCord = to.cordLetter+8*to.cordNumber;
-    let resultFromCord = from.cordLetter+8*from.cordNumber;
-    let sampleState = [...this.state];
-    sampleState[resultToCord]=piece.text;
-    sampleState[resultFromCord]="";*/
-  //  if(this.kingInCheck(this.players[this.currentTurn].team,sampleState)){
-    //  console.log("King in check");
-    //  return false;
-    //} else {
-    //return move;
-    //}
+    if(piece.move(this.board,to)){
+      let newState = this.board.cloneState();
+      newState=this.board.move(piece,to,newState);
+      if(this.board.kingInCheck(this.players[this.currentTurn].team,newState)){
+        console.log("King in check");
+        return false;
+      } else {
+        console.log("King alright");
+        return true;
+      }
+    } else {
+      return false;
+    }
   }
 
   async makeMove(player,coordinate,new_coordinate){
