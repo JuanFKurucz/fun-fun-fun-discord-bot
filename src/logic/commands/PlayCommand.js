@@ -1,7 +1,7 @@
 "use strict";
 
 const Command = require("../Command.js");
-const Chess = require("../game/Chess.js");
+const Chess = require(__dirname + "/../../game/Chess.js");
 
 const games = {};
 
