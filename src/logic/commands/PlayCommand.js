@@ -2,7 +2,7 @@
 
 const path = require("path");
 const Command = require("../Command.js");
-const Chess = require(path.join(__dirname, '../..', '/game/Chess.js'));
+const Chess = require(path.join(__dirname, '..', '/game/Chess.js'));
 
 const games = {};
 
