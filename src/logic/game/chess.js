@@ -1,6 +1,7 @@
 "use strict";
 const Player = require('./Player');
 const Board = require('./Board');
+const Data = require('./data.json');
 const base64ToImage = require('base64-to-image');
 const { createCanvas, loadImage } = require('canvas');
 const width=690;
@@ -10,6 +11,7 @@ const ctx = canvas.getContext('2d');
 
 class Chess {
   constructor() {
+    this.playing=false;
     this.squareWidth = 80;
     this.squareHeight = 80;
     this.squareColors = ["#FECEA0","#D18B47"];
@@ -17,7 +19,7 @@ class Chess {
       top:25,
       left:25
     };
-    this.board=new Board(Board.startState);
+    this.board=new Board(this,Board.startState);
     this.players=[new Player(),new Player()];
     this.currentTurn=0;
     this.start();
@@ -50,6 +52,7 @@ class Chess {
   async makeMove(player,coordinate,new_coordinate){
     if(player == this.currentTurn){
       const currentPlayer = this.players[player];
+      console.log(coordinate, new_coordinate);
       if(coordinate.length==2 && new_coordinate.length==2){
         const cord = this.board.getCord(coordinate);
         const piece = this.board.getPiece(cord);
@@ -58,22 +61,25 @@ class Chess {
           if(piece.team == currentPlayer.team){
             const new_cord = this.board.getCord(new_coordinate.toLowerCase());
             if(this.tryMakeMove(piece,new_cord)){
-              this.board.state[new_cord.index]=piece.print();
-              this.board.state[cord.index]="";
+              this.board.move(piece,new_cord);
               this.currentTurn++;
               this.currentTurn%=this.players.length;
               await this.draw();
               console.log("Next turn");
             } else {
               console.log("You can't make this move");
+              this.playing=false;
             }
           } else {
             console.log("This piece doens't belong to you");
+            this.playing=false;
           }
         } else {
           console.log("Empty field");
+          this.playing=false;
         }
       } else {
+        console.log(coordinate,new_coordinate);
         console.log("Coordinates are wrong");
       }
     } else {
@@ -82,6 +88,7 @@ class Chess {
   }
 
   async start(){
+    this.playing=true;
     let firstPlayer = Math.floor(Math.random() * this.players.length);
     this.players[firstPlayer].assignColor("w");
     this.currentTurn=firstPlayer;
@@ -189,6 +196,25 @@ class Chess {
 
 const game = new Chess();
 
+async function start(){
+  let moves = Data.game;
+  for(let d in moves){
+    const message = moves[d].toString().trim().toLowerCase();
+    const realCords=[];
+    for(let m in message){
+      const ascii = message.charCodeAt(m);
+      if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
+        realCords.push(message[m]);
+      }
+    }
+    game.makeMove(game.currentTurn,realCords[0]+""+parseInt(9-parseInt(realCords[1]))+"",realCords[2]+""+parseInt(9-parseInt(realCords[3]))+"");
+    if(!game.playing){
+      break;
+    }
+  }
+}
+
+start();
 var stdin = process.openStdin();
 
 stdin.addListener("data", function(d) {

@@ -11,17 +11,15 @@ class Bishop extends Piece {
   move(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
     let direction = "";
-
     if(newCoordinate.cordLetter<this.coordinate.cordLetter && newCoordinate.cordNumber<this.coordinate.cordNumber){
-      direction="diagonalRD";
-    } else if(newCoordinate.cordLetter>this.coordinate.cordLetter && newCoordinate.cordNumber<this.coordinate.cordNumber){
-      direction="diagonalLD";
-    } else if(newCoordinate.cordLetter<this.coordinate.cordLetter && newCoordinate.cordNumber>this.coordinate.cordNumber){
-      direction="diagonalRU";
-    } else if(newCoordinate.cordLetter>this.coordinate.cordLetter && newCoordinate.cordNumber>this.coordinate.cordNumber){
       direction="diagonalLU";
+    } else if(newCoordinate.cordLetter>this.coordinate.cordLetter && newCoordinate.cordNumber<this.coordinate.cordNumber){
+      direction="diagonalRU";
+    } else if(newCoordinate.cordLetter<this.coordinate.cordLetter && newCoordinate.cordNumber>this.coordinate.cordNumber){
+      direction="diagonalLD";
+    } else if(newCoordinate.cordLetter>this.coordinate.cordLetter && newCoordinate.cordNumber>this.coordinate.cordNumber){
+      direction="diagonalRD";
     }
-
     if(direction !== ""){
       return board.clearPath(direction,this.coordinate,newCoordinate);
     } else {

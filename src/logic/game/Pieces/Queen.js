@@ -12,25 +12,25 @@ class Queen extends Piece {
     const newField = board.getPiece(newCoordinate);
     let direction = "";
 
-    if(Math.abs(from.cordLetter-to.cordLetter)==0 && Math.abs(from.cordNumber-to.cordNumber)!=0){
-      if(from.cordNumber>to.cordNumber){
+    if(Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)==0 && Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)!=0){
+      if(this.coordinate.cordNumber>newCoordinate.cordNumber){
         direction="up";
       } else {
         direction="down";
       }
-    } else if(Math.abs(from.cordLetter-to.cordLetter)!=0 && Math.abs(from.cordNumber-to.cordNumber)==0){
-      if(from.cordLetter>to.cordLetter){
+    } else if(Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)!=0 && Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)==0){
+      if(this.coordinate.cordLetter>newCoordinate.cordLetter){
         direction="left";
       } else {
         direction="right";
       }
-    } else if(from.cordLetter<to.cordLetter && from.cordNumber<to.cordNumber){
+    } else if(this.coordinate.cordLetter<newCoordinate.cordLetter && this.coordinate.cordNumber<newCoordinate.cordNumber){
       direction="diagonalRD";
-    } else if(from.cordLetter>to.cordLetter && from.cordNumber<to.cordNumber){
+    } else if(this.coordinate.cordLetter>newCoordinate.cordLetter && this.coordinate.cordNumber<newCoordinate.cordNumber){
       direction="diagonalLD";
-    } else if(from.cordLetter<to.cordLetter && from.cordNumber>to.cordNumber){
+    } else if(this.coordinate.cordLetter<newCoordinate.cordLetter && this.coordinate.cordNumber>newCoordinate.cordNumber){
       direction="diagonalRU";
-    } else if(from.cordLetter>to.cordLetter && from.cordNumber>to.cordNumber){
+    } else if(this.coordinate.cordLetter>newCoordinate.cordLetter && this.coordinate.cordNumber>newCoordinate.cordNumber){
       direction="diagonalLU";
     }
 

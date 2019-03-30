@@ -25,12 +25,13 @@ class Rook extends Piece {
         Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber) === 0
       ){
       if(newCoordinate.cordLetter>this.coordinate.cordLetter){
-        direction="left";
-      } else {
         direction="right";
+      } else {
+        direction="left";
       }
     }
-
+    console.log(direction);
+console.log(this.coordinate,newCoordinate);
     if(direction !== ""){
       return board.clearPath(direction,this.coordinate,newCoordinate);
     } else {

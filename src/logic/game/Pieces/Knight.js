@@ -10,7 +10,7 @@ class Knight extends Piece {
 
   move(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
-    return newField.team != this.team &&
+    return ((newField && newField.team != this.team) || newField == null) &&
           (
             ( Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==1 &&
               Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==2

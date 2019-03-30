@@ -4,8 +4,9 @@ const Coordinate = require("./Coordinate");
 const PieceConstructor = require("./Constructors/PieceConstructor");
 
 class Board {
-  constructor(state){
+  constructor(game,state){
     this.state = state;
+    this.parent = game;
   }
 
   getCord(text){
@@ -27,15 +28,30 @@ class Board {
       }
     }
     if(kingCord){
+      const kingCoordinate = this.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
       for(let a in Coordinate.all){
         const cord = this.getCord(Coordinate.all[a]);
-        const piece = this.getPiece(state,cord);
+        const piece = this.getPiece(cord);
         if(piece.text!="" && piece.text[0] != team){
-          if(this.tryMakeMove(state,piece,this.getCord(Coordinate.all[a]),kingCord)){
+          if(piece.move(this,kingCoordinate)){
             return true;
             break;
           }
         }
+      }
+    }
+    return false;
+  }
+
+  move(piece,new_cord){
+    this.state[new_cord.index]=piece.print();
+    this.state[piece.coordinate.index]="";
+  }
+
+  cordInArray(array,coordinate){
+    for(let c in array){
+      if(array[c].text == coordinate.text){
+        return true;
       }
     }
     return false;
@@ -46,7 +62,7 @@ class Board {
     from:[cordLetter,cordNumber]
     to:[cordLetter,cordNumber]
     */
-    const coordinates = {};
+    const coordinates = [];
     let i = 0;
     let y = 0;
 
@@ -59,7 +75,9 @@ class Board {
           letter = String.fromCharCode(97+parseInt(from.cordLetter));
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
@@ -69,17 +87,21 @@ class Board {
           letter = String.fromCharCode(97+parseInt(from.cordLetter));
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
       case "left":
         for(i=parseInt(from.cordLetter)-1;i>=parseInt(to.cordLetter);i--){
-          number = parseInt(from.cordNumber)-1;
+          number = parseInt(from.cordNumber)+1;
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
@@ -89,7 +111,9 @@ class Board {
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
@@ -99,7 +123,9 @@ class Board {
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
           y--;
         }
@@ -112,7 +138,9 @@ class Board {
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
@@ -122,7 +150,9 @@ class Board {
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
           y--;
         }
@@ -135,7 +165,9 @@ class Board {
           letter = String.fromCharCode(97+i);
           if(i>=0&&number>=0){
             const c = new Coordinate(letter+""+number);
-            coordinates[c.text]=c;
+            if(!this.cordInArray(coordinates,c)){
+              coordinates.push(c);
+            }
           }
         }
         break;
@@ -146,18 +178,21 @@ class Board {
   clearPath(direction,from,to){
     const path = this.generateCoordinates(direction,from,to);
     var pathOk = true;
-    if(path.length===0 || !path.hasOwnProperty(to.text)){
+    if(path.length===0 || !this.cordInArray(path,to)){
       pathOk=false;
     } else {
-      for(var i in path){
-        var _currentPiece = this.getPiece(state,path[i]);
-        if(
-          (i==path.length-1 && _currentPiece.team != currentPlayer.team) ||
-          _currentPiece.text == "" ){
+      let count=0;
+      for(let i in path){
+        var _currentPiece = this.getPiece(path[i]);
+        if(_currentPiece){
+          if(
+            (i==path.length-1 && _currentPiece.team != this.parent.players[this.parent.currentTurn].team) ||
+            _currentPiece.text == "" ){
 
-        } else {
-          pathOk=false;
-          break;
+          } else {
+            pathOk=false;
+            break;
+          }
         }
       }
     }
