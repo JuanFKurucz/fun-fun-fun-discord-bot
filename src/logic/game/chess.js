@@ -20,9 +20,7 @@ class Chess {
       left:25
     };
     this.board=new Board(this,Board.startState);
-    this.players=[new Player(),new Player()];
     this.currentTurn=0;
-    this.start();
   }
 
   nextTurn(){
@@ -50,61 +48,78 @@ class Chess {
     return this.players[this.currentTurn];
   }
 
+  getOtherPlayer(){
+    return this.players[(this.players.indexOf(this.getCurrentPlayer())+1)%2];
+  }
+
+  getPlayerById(id){
+    for(let p in this.players){
+      if(this.players[p].name == id){
+        return this.players[p];
+      }
+    }
+    return null;
+  }
+
   async makeMove(player,coordinate,new_coordinate){
-    if(player == this.currentTurn){
-      const currentPlayer = this.players[player];
-      if(coordinate.length==2 && new_coordinate.length==2){
-        const cord = this.board.getCord(coordinate);
-        const piece = this.board.getPiece(cord);
-        if(piece.text!=""){
-          if(piece.team == currentPlayer.team){
-            const new_cord = this.board.getCord(new_coordinate.toLowerCase());
-            if(this.tryMakeMove(piece,new_cord)){
-              this.board.move(piece,new_cord);
-              this.nextTurn();
-              if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
-                if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
-                  this.playing=false;
-                  console.log("Game ended winner",this.getCurrentPlayer().opponent());
+    const currentPlayer = this.getPlayerById(player);
+    if(currentPlayer !== null){
+      if(this.players.indexOf(currentPlayer) == this.currentTurn){
+        if(coordinate.length==2 && new_coordinate.length==2){
+          const cord = this.board.getCord(coordinate);
+          const piece = this.board.getPiece(cord);
+          if(piece.text!=""){
+            if(piece.team == currentPlayer.team){
+              const new_cord = this.board.getCord(new_coordinate.toLowerCase());
+              if(this.tryMakeMove(piece,new_cord)){
+                this.board.move(piece,new_cord);
+                this.nextTurn();
+                await this.draw();
+                if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
+                  if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
+                    this.playing=false;
+                    return "Game ended, winner: "+this.getOtherPlayer().mention();
+                  } else {
+                    return "Next turn: be aware your king is in check "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+                  }
                 } else {
-                  console.log("Next turn: be aware your king is in check");
+                  return "Next turn "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
                 }
               } else {
-                console.log("Next turn");
+                 return currentPlayer.mention()+" you can't make this move";
               }
-              await this.draw();
             } else {
-              console.log("You can't make this move");
-              this.playing=false;
+              return currentPlayer.mention()+" that piece doesn't belong to you, you are "+this.getCurrentPlayer().printTeam();
             }
           } else {
-            console.log("This piece doens't belong to you");
-            this.playing=false;
+            return currentPlayer.mention()+" that's an empty field";
           }
         } else {
-          console.log("Empty field");
-          this.playing=false;
+          return currentPlayer.mention()+" the coordinates are wrong";
         }
       } else {
-        console.log("Coordinates are wrong");
+        return currentPlayer.mention()+" it isn't your turn";
       }
     } else {
-      console.log("Not your turn");
+      return "Unexpected error";
     }
   }
 
-  async start(){
+  async start(id1,id2){
+
+    this.players=[new Player(id1),new Player(id2)];
     this.playing=true;
     let firstPlayer = Math.floor(Math.random() * this.players.length);
     this.players[firstPlayer].assignColor("w");
     this.currentTurn=firstPlayer;
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
     await this.draw();
+    return "It's the turn of "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
   }
 
   drawCoordinates(){
     const letters=["a","b","c","d","e","f","g","h"];
-    const numbers=[1,2,3,4,5,6,7,8];
+    const numbers=[8,7,6,5,4,3,2,1];
 
     ctx.font = "18px Arial";
     ctx.fillStyle = "black";
@@ -166,83 +181,24 @@ class Chess {
       if(this.board.state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const image = await this.getImage("images/"+this.board.state[i]+".png");
+        const image = await this.getImage(__dirname+"/images/"+this.board.state[i]+".png");
         ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
-        this.save();
       }
     }
+    await this.save();
   }
 
-  save(){
+  async save(){
     var optionalObj = {'fileName': 'game', 'type':'png'};
-    base64ToImage(canvas.toDataURL(),"./",optionalObj);
+    await base64ToImage(canvas.toDataURL(),__dirname+"/",optionalObj);
   }
 
   async draw(){
-    /* Console debugg*/
-    let text = "";
-    for(let s in this.board.state){
-      if(s%8==0){
-        text+="\n";
-      }
-      if(this.board.state[s]==""){
-        text+="   ";
-      } else {
-        text+=this.board.state[s]+" ";
-      }
-    }
-    console.log(text);
-
     this.drawBackGround();
     this.drawCoordinates();
     await this.drawGame(this.state);
-    this.save();
+    await this.save();
   }
 };
-
-const game = new Chess();
-
-/*async function start(){
-  let moves = Data.game;
-  for(let d in moves){
-    const message = moves[d].toString().trim().toLowerCase();
-    const realCords=[];
-    for(let m in message){
-      const ascii = message.charCodeAt(m);
-      if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
-        realCords.push(message[m]);
-      }
-    }
-    game.makeMove(game.currentTurn,realCords[0]+""+parseInt(9-parseInt(realCords[1]))+"",realCords[2]+""+parseInt(9-parseInt(realCords[3]))+"");
-    if(!game.playing){
-      break;
-    }
-  }
-  process.exit();
-}
-
-start();*/
-
-var stdin = process.openStdin();
-
-stdin.addListener("data", async function(d) {
-  const message = d.toString().trim().toLowerCase();
-  const realCords=[];
-  for(let m in message){
-    const ascii = message.charCodeAt(m);
-    if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
-      realCords.push(message[m]);
-    }
-  }
-  if(realCords.length==2){
-    const cord = game.board.getCord(realCords[0]+""+realCords[1]);
-    const piece = game.board.getPiece(game.state,cord);
-    if(piece != null && piece.text!=""){
-      game.board.possibleMoves(piece);
-    }
-  } else {
-    await game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
-  }
-});
 
 module.exports = Chess;

@@ -113,7 +113,16 @@ module.exports = class Bot {
 
   async sendMessage(msg,response,user){
     try{
-      const message = await msg.channel.send(response);
+      let message;
+      console.log(response.text);
+      console.log(response.attachment);
+      if((response.text !== null && response.attachment !== null)){
+        console.log("this one");
+        message = await msg.channel.send(response.text,response.attachment);
+      } else {
+        console.log("not this one");
+        message = await msg.channel.send(response);
+      }
       await user.setLastResponse(message);
       console.log("Message sent");
     } catch(e){
@@ -130,7 +139,7 @@ module.exports = class Bot {
       const response=await this.commandHandler(msg,user);
 
       if(response!==null){
-        await this.sendMessage(msg,response.print(),user);
+        await this.sendMessage(msg,response,user);
       }
 
       user.emptyMessageLang();

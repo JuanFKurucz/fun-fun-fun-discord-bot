@@ -7,6 +7,8 @@ module.exports = class Message {
   constructor(user) {
     this.owner=user;
     this.language = this.owner.getLanguage();
+    this.text = null;
+    this.attachment = null;
     this.message = new RichEmbed();
     this.message.setFooter(this.owner.getName(),this.owner.getAvatar());
   }
@@ -70,7 +72,11 @@ module.exports = class Message {
   }
 
   print(){
-    this.message.setTimestamp(new Date());
+    try{
+      this.message.setTimestamp(new Date());
+    }catch(e){
+
+    }
     return this.message;
   }
 };
