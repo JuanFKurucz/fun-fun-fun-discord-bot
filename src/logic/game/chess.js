@@ -212,9 +212,11 @@ async function start(){
       break;
     }
   }
+  process.exit();
 }
 
 start();
+/*
 var stdin = process.openStdin();
 
 stdin.addListener("data", function(d) {
@@ -235,6 +237,6 @@ stdin.addListener("data", function(d) {
   } else {
     game.makeMove(game.currentTurn,realCords[0]+""+realCords[1]+"",realCords[2]+""+realCords[3]+"");
   }
-});
+});*/
 
 module.exports = Chess;

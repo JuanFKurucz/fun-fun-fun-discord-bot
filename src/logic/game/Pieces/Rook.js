@@ -16,9 +16,9 @@ class Rook extends Piece {
         Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber) !== 0
       ){
       if(newCoordinate.cordNumber>this.coordinate.cordNumber){
-        direction="up";
-      } else {
         direction="down";
+      } else {
+        direction="up";
       }
     } else if(
         Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) !== 0 &&
