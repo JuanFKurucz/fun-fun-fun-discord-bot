@@ -23,7 +23,7 @@ module.exports = class Bot {
     return BotObject;
   }
 
-  constructor(debugMode=true) {
+  constructor(debugMode=false) {
     this.prefix = config("prefix");
     this.userGraph = new Graph("1");
     this.logic = new Logic(this.prefix);
