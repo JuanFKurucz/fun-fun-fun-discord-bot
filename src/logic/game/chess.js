@@ -1,5 +1,5 @@
 "use strict";
-const Player = require('./Player');
+const Player = require('./player');
 const Board = require('./Board');
 const Data = require('./data.json');
 const base64ToImage = require('base64-to-image');
