@@ -20,8 +20,25 @@ class Board {
     return PieceConstructor.create(type,team,coordinate);
   }
 
+  checkMate(team,state){
+    console.log("Team to check",team);
+    for(let a in Coordinate.all){
+      const cord = this.getCord(Coordinate.all[a]);
+      const piece = this.getPiece(cord);
+      if(piece !== null && piece.team == team){
+        const newBoard = new Board(this.parent,state);
+        const moves = newBoard.possibleMoves(piece);
+        if(moves.length){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   kingInCheck(team,state){
     let kingCord = null;
+    const newBoard = new Board(this.parent,state);
     for(let s in state){
       if(state[s]==team+"k"){
         kingCord=[s%8,parseInt(s/8)];
@@ -33,8 +50,8 @@ class Board {
         const cord = this.getCord(Coordinate.all[a]);
         const piece = this.getPiece(cord);
         if(piece !== null && piece.team != team){
-          const newBoard = new Board(this.parent,state);
-          if(piece.move(newBoard,kingCoordinate)){
+          let canItMove = piece.move(newBoard,kingCoordinate);
+          if(canItMove){
             return true;
           }
         }
@@ -45,7 +62,7 @@ class Board {
   }
 
   cloneState(){
-    return this.state.slice(0);
+    return JSON.parse(JSON.stringify(this.state));
   }
 
   move(piece,new_cord,state=null){
@@ -209,15 +226,21 @@ class Board {
   }
 
   possibleMoves(piece){
-    const possibleMoves = [];
-    for(let a in Board.coordinates){
-      const cord = this.getCord(Board.coordinates[a]);
-      const fieldTo = this.getPiece(cord);
-      if(piece.move(cord,fieldTo)){
-        possibleMoves.push(Board.coordinates[a]);
+    const list = [];
+    if(piece !== null){
+      const tempBoard = new Board(this.parent,this.cloneState());
+      for(let a in Coordinate.all){
+        const cord = this.getCord(Coordinate.all[a]);
+        if(piece.move(tempBoard,cord)){
+          tempBoard.move(piece,cord);
+          if(!tempBoard.kingInCheck(piece.team,tempBoard.state)){
+            list.push(cord);
+          }
+          tempBoard.state=this.cloneState();
+        }
       }
     }
-    return possibleMoves;
+    return list;
   }
 }
 

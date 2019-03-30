@@ -12,6 +12,7 @@ class Queen extends Piece {
     const newField = board.getPiece(newCoordinate);
     let direction = "";
 
+
     if(Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)==0 && Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)!=0){
       if(this.coordinate.cordNumber>newCoordinate.cordNumber){
         direction="up";

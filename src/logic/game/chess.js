@@ -25,12 +25,9 @@ class Chess {
     this.start();
   }
 
-  endGame(state,team){
-    for(let s in state){
-      if(true){
-
-      }
-    }
+  nextTurn(){
+    this.currentTurn++;
+    this.currentTurn%=this.players.length;
   }
 
   tryMakeMove(piece,to){
@@ -49,6 +46,10 @@ class Chess {
     }
   }
 
+  getCurrentPlayer(){
+    return this.players[this.currentTurn];
+  }
+
   async makeMove(player,coordinate,new_coordinate){
     if(player == this.currentTurn){
       const currentPlayer = this.players[player];
@@ -62,10 +63,19 @@ class Chess {
             const new_cord = this.board.getCord(new_coordinate.toLowerCase());
             if(this.tryMakeMove(piece,new_cord)){
               this.board.move(piece,new_cord);
-              this.currentTurn++;
-              this.currentTurn%=this.players.length;
+              this.nextTurn();
+              console.log("check initial");
+              if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
+                if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
+                  this.playing=false;
+                  console.log("Game ended winner",this.getCurrentPlayer().opponent());
+                } else {
+                  console.log("King in check");
+                }
+              } else {
+                console.log("Next turn");
+              }
               await this.draw();
-              console.log("Next turn");
             } else {
               console.log("You can't make this move");
               this.playing=false;
