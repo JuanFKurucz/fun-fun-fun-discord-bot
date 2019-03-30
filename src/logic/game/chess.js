@@ -121,7 +121,7 @@ class Chess {
     const letters=["a","b","c","d","e","f","g","h"];
     const numbers=[8,7,6,5,4,3,2,1];
 
-    ctx.font = "18px Arial";
+    ctx.font = "18px Pfennig";
     ctx.fillStyle = "black";
     for(let l in letters){
       ctx.fillText(
