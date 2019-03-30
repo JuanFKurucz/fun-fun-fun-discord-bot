@@ -56,7 +56,7 @@ class Chess {
       if(coordinate.length==2 && new_coordinate.length==2){
         const cord = this.board.getCord(coordinate);
         const piece = this.board.getPiece(cord);
-        console.log(piece);
+        //console.log(piece);
         if(piece.text!=""){
           if(piece.team == currentPlayer.team){
             const new_cord = this.board.getCord(new_coordinate.toLowerCase());
@@ -207,6 +207,7 @@ async function start(){
         realCords.push(message[m]);
       }
     }
+    console.log("RealCords:",realCords);
     game.makeMove(game.currentTurn,realCords[0]+""+parseInt(9-parseInt(realCords[1]))+"",realCords[2]+""+parseInt(9-parseInt(realCords[3]))+"");
     if(!game.playing){
       break;

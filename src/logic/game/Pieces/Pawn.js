@@ -31,6 +31,13 @@ class Pawn extends Piece {
     }
     return move;
   }
+
+  print(){
+    if((this.team=="w" && this.coordinate.cordNumber == "1") || (this.team=="b" && this.coordinate.cordNumber == "8")){
+      this.type="q";
+    }
+    return this.team+this.type;
+  }
 }
 
 module.exports = Pawn;
