@@ -68,7 +68,7 @@ class Chess {
         if(coordinate.length==2 && new_coordinate.length==2){
           const cord = this.board.getCord(coordinate);
           const piece = this.board.getPiece(cord);
-          if(piece.text!=""){
+          if(piece!=null && piece.text!=""){
             if(piece.team == currentPlayer.team){
               const new_cord = this.board.getCord(new_coordinate.toLowerCase());
               if(this.tryMakeMove(piece,new_cord)){

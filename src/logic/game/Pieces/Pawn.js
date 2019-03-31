@@ -24,7 +24,6 @@ class Pawn extends Piece {
         }
       }
     } else if(newField != null && newField.team != "" && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
-      console.log();
       if( (this.team == "w" && this.coordinate.cordNumber-newCoordinate.cordNumber == 1) ||
           (this.team == "b" && newCoordinate.cordNumber-this.coordinate.cordNumber == 1)){
         move = true

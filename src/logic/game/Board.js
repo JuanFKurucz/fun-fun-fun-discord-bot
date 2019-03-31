@@ -43,7 +43,7 @@ class Board {
         kingCord=[s%8,parseInt(s/8)];
       }
     }
-    if(kingCord.length){
+    if(kingCord!== null){
       const kingCoordinate = this.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
       for(let a in Coordinate.all){
         const cord = this.getCord(Coordinate.all[a]);
