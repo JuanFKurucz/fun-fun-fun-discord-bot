@@ -23,11 +23,12 @@ class Pawn extends Piece {
           move = true;
         }
       }
-    } else if(
-      newField && newField.coordinate.team != "" &&
-      Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==1 &&
-      Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==1){
-      move = true;
+    } else if(newField != null && newField.team != "" && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
+      console.log();
+      if( (this.team == "w" && this.coordinate.cordNumber-newCoordinate.cordNumber == 1) ||
+          (this.team == "b" && newCoordinate.cordNumber-this.coordinate.cordNumber == 1)){
+        move = true
+      }
     }
     return move;
   }
