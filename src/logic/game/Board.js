@@ -44,10 +44,10 @@ class Board {
       }
     }
     if(kingCord !== null){
-      const kingCoordinate = this.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
+      const kingCoordinate = newBoard.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
       for(let a in Coordinate.all){
-        const cord = this.getCord(Coordinate.all[a]);
-        const piece = this.getPiece(cord);
+        const cord = newBoard.getCord(Coordinate.all[a]);
+        const piece = newBoard.getPiece(cord);
         if(piece !== null && piece.team !== team){
           let canItMove = piece.move(newBoard,kingCoordinate);
           if(canItMove){
@@ -68,7 +68,7 @@ class Board {
     if(state==null){
       state = this.state;
     }
-    
+
     state[new_cord.index]=piece.print(new_cord);
     state[piece.coordinate.index]="";
 
@@ -211,16 +211,14 @@ class Board {
       let count=0;
       for(let i in path){
         var _currentPiece = this.getPiece(path[i]);
-        if(_currentPiece !== null){
-          if(
-            (i === path.length-1 && _currentPiece.team !== piece.team) ||
-            _currentPiece.text.length){
+        if( _currentPiece === null ||
+          (to.text === path[i].text && _currentPiece.team !== piece.team)){
 
-          } else {
-            pathOk=false;
-            break;
-          }
+        } else {
+          pathOk=false;
+          break;
         }
+
       }
     }
     return pathOk;
@@ -246,14 +244,14 @@ class Board {
 }
 
 Board.startState = [
+  "br","bn","bb","","bk","bb","bn","br",
+  "","","","bp","bp","bp","bp","bp",
+  "bp","","bp","","","","","",
   "","","","","","","","",
-  "wp","","","","","","","",
-  "","","","","","","","",
-  "","","","","","bk","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "bp","","","","wk","","","",
-  "","","","","","","","",
+  "bp","","","","","","","",
+  "wb","wp","bq","wp","","","","wp",
+  "","","","","wp","wp","wp","",
+  "wr","wn","","wq","wk","wb","wn","wr",
 ];
 
 /*Board.startState = [
