@@ -19,7 +19,7 @@ class Chess {
       top:25,
       left:25
     };
-    this.board=new Board(this,Board.startState);
+    this.board=new Board(this,JSON.parse(JSON.stringify(Board.startState)));
     this.currentTurn=0;
   }
 
@@ -62,6 +62,7 @@ class Chess {
   }
 
   async makeMove(player,coordinate,new_coordinate){
+    let message = "";
     const currentPlayer = this.getPlayerById(player);
     if(currentPlayer !== null){
       if(this.players.indexOf(currentPlayer) == this.currentTurn){
@@ -78,31 +79,32 @@ class Chess {
                 if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
                   if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
                     this.playing=false;
-                    return "Game ended, winner: "+this.getOtherPlayer().mention();
+                    message="Game ended, winner: "+this.getOtherPlayer().mention();
                   } else {
-                    return "Next turn: be aware your king is in check "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+                    message="Next turn: be aware your king is in check "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
                   }
                 } else {
-                  return "Next turn "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+                  message="Next turn "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
                 }
               } else {
-                 return currentPlayer.mention()+" you can't make this move";
+                message=currentPlayer.mention()+" you can't make this move";
               }
             } else {
-              return currentPlayer.mention()+" that piece doesn't belong to you, you are "+this.getCurrentPlayer().printTeam();
+              message=currentPlayer.mention()+" that piece doesn't belong to you, you are "+this.getCurrentPlayer().printTeam();
             }
           } else {
-            return currentPlayer.mention()+" that's an empty field";
+            message=currentPlayer.mention()+" that's an empty field";
           }
         } else {
-          return currentPlayer.mention()+" the coordinates are wrong";
+          message=currentPlayer.mention()+" the coordinates are wrong";
         }
       } else {
-        return currentPlayer.mention()+" it isn't your turn";
+        message=currentPlayer.mention()+" it isn't your turn";
       }
     } else {
-      return "Unexpected error";
+      message="Unexpected error";
     }
+    return {text:message,status:this.playing};
   }
 
   async start(id1,id2){

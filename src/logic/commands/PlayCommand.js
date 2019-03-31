@@ -4,7 +4,7 @@ const path = require("path");
 const Command = require("../Command.js");
 const Chess = require(path.join(__dirname, '..', '/game/chess.js'));
 
-const games = {};
+let games = {};
 
 module.exports = class PlayCommand extends Command {
   constructor(id,name) {
@@ -43,7 +43,16 @@ module.exports = class PlayCommand extends Command {
         } else {
           cord2=realCords[3]+""+(9-parseInt(realCords[2]));
         }
-        m.text = await game.makeMove(user.id,cord1,cord2);
+        const response = await game.makeMove(user.id,cord1,cord2);
+        m.text = response.text;
+        console.log(games);
+        if(response.status === false){
+          for(let p in game.players){
+            console.log(game.players[p].name);
+            delete games[game.players[p].name];
+          }
+        }
+        console.log(games);
         console.log(m.text);
       } else {
         const againts = command[1].replace(/[\\<>@#&!]/g, "");

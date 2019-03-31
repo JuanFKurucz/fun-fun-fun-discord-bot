@@ -254,15 +254,4 @@ Board.startState = [
   "wr","wn","wb","wq","wk","wb","wn","wr"
 ];
 
-/*Board.startState = [
-  "br","bn","bb","bq","bk","bb","bn","br",
-  "bp","bp","bp","bp","bp","bp","bp","bp",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "","","","","","","","",
-  "wp","wp","wp","wp","wp","wp","wp","wp",
-  "wr","wn","wb","wq","wk","wb","wn","wr"
-];*/
-
 module.exports = Board;
