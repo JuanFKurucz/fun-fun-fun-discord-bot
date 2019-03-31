@@ -19,41 +19,46 @@ module.exports = class PlayCommand extends Command {
     if(command.length >= 2){
       if(games.hasOwnProperty(user.id)){
         const game = games[user.id];
-        command.shift();
-        const message = command.join("").toString().trim().toLowerCase();
-        const realCords=[];
-        for(let m in message){
-          const ascii = message.charCodeAt(m);
-          if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
-            realCords.push(message[m]);
-          }
-        }
-        m.attachment = {
-          file: __dirname.replace("commands","game")+"/game.png" // Or replace with FileOptions object
-        };
-        let cord1 = ""; game.board.getCord(realCords[0]+""+realCords[1],true);
-        let cord2 = "";game.board.getCord(realCords[2]+""+realCords[3],true);
-        if(isNaN(realCords[0])){
-          cord1=realCords[0]+""+(9-parseInt(realCords[1]));
-        } else {
-          cord1=realCords[1]+""+(9-parseInt(realCords[0]));
-        }
-        if(isNaN(realCords[2])){
-          cord2=realCords[2]+""+(9-parseInt(realCords[3]));
-        } else {
-          cord2=realCords[3]+""+(9-parseInt(realCords[2]));
-        }
-        const response = await game.makeMove(user.id,cord1,cord2);
-        m.text = response.text;
-        console.log(games);
-        if(response.status === false){
+        if(command[1] == "ff"){
           for(let p in game.players){
             console.log(game.players[p].name);
             delete games[game.players[p].name];
           }
+          m.setDescription("Game deleted");
+        } else {
+          command.shift();
+          const message = command.join("").toString().trim().toLowerCase();
+          const realCords=[];
+          for(let m in message){
+            const ascii = message.charCodeAt(m);
+            if((ascii>= 97 && ascii<=122) || (ascii>=49 && ascii<=57)){
+              realCords.push(message[m]);
+            }
+          }
+          m.attachment = {
+            file: __dirname.replace("commands","game")+"/game.png" // Or replace with FileOptions object
+          };
+          let cord1 = ""; game.board.getCord(realCords[0]+""+realCords[1],true);
+          let cord2 = "";game.board.getCord(realCords[2]+""+realCords[3],true);
+          if(isNaN(realCords[0])){
+            cord1=realCords[0]+""+(9-parseInt(realCords[1]));
+          } else {
+            cord1=realCords[1]+""+(9-parseInt(realCords[0]));
+          }
+          if(isNaN(realCords[2])){
+            cord2=realCords[2]+""+(9-parseInt(realCords[3]));
+          } else {
+            cord2=realCords[3]+""+(9-parseInt(realCords[2]));
+          }
+          const response = await game.makeMove(user.id,cord1,cord2);
+          m.text = response.text;
+          if(response.status === false){
+            for(let p in game.players){
+              console.log(game.players[p].name);
+              delete games[game.players[p].name];
+            }
+          }
         }
-        console.log(games);
-        console.log(m.text);
       } else {
         const againts = command[1].replace(/[\\<>@#&!]/g, "");
         if(againts.length && !games.hasOwnProperty(againts)){
