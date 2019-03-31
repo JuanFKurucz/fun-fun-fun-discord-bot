@@ -24,7 +24,7 @@ class Board {
     for(let a in Coordinate.all){
       const cord = this.getCord(Coordinate.all[a]);
       const piece = this.getPiece(cord);
-      if(piece !== null && piece.team == team){
+      if(piece !== null && piece.team === team){
         const newBoard = new Board(this.parent,state);
         const moves = newBoard.possibleMoves(piece);
         if(moves.length){
@@ -39,16 +39,16 @@ class Board {
     let kingCord = null;
     const newBoard = new Board(this.parent,state);
     for(let s in state){
-      if(state[s]==team+"k"){
+      if(state[s]===team+"k"){
         kingCord=[s%8,parseInt(s/8)];
       }
     }
-    if(kingCord!== null){
+    if(kingCord !== null){
       const kingCoordinate = this.getCord(Coordinate.all[kingCord[0]+kingCord[1]*8]);
       for(let a in Coordinate.all){
         const cord = this.getCord(Coordinate.all[a]);
         const piece = this.getPiece(cord);
-        if(piece !== null && piece.team != team){
+        if(piece !== null && piece.team !== team){
           let canItMove = piece.move(newBoard,kingCoordinate);
           if(canItMove){
             return true;
@@ -68,8 +68,10 @@ class Board {
     if(state==null){
       state = this.state;
     }
-    state[new_cord.index]=piece.print();
+    
+    state[new_cord.index]=piece.print(new_cord);
     state[piece.coordinate.index]="";
+
     return state;
   }
 
@@ -209,10 +211,10 @@ class Board {
       let count=0;
       for(let i in path){
         var _currentPiece = this.getPiece(path[i]);
-        if(_currentPiece){
+        if(_currentPiece !== null){
           if(
-            (i==path.length-1 && _currentPiece.team != piece.team) ||
-            _currentPiece.text == "" ){
+            (i === path.length-1 && _currentPiece.team !== piece.team) ||
+            _currentPiece.text.length){
 
           } else {
             pathOk=false;
@@ -244,14 +246,14 @@ class Board {
 }
 
 Board.startState = [
-  "br","bn","bb","bq","bk","bb","bn","br",
-  "bp","bp","bp","bp","bp","bp","bp","bp",
   "","","","","","","","",
-  "","","wp","","","","","",
-  "","","","bp","","","","",
+  "wp","","","","","","","",
   "","","","","","","","",
-  "wp","wp","wp","wp","wp","wp","wp","wp",
-  "wr","wn","wb","wq","wk","wb","wn","wr"
+  "","","","","","bk","","",
+  "","","","","","","","",
+  "","","","","","","","",
+  "bp","","","","wk","","","",
+  "","","","","","","","",
 ];
 
 /*Board.startState = [

@@ -15,7 +15,6 @@ class Pawn extends Piece {
         newField === null){
       var row = (this.team === "w") ? 6 : 1;
       var moveOk = (this.team === "b") ? newCoordinate.cordNumber>this.coordinate.cordNumber : this.coordinate.cordNumber>newCoordinate.cordNumber;
-
       if(moveOk){
         if(this.coordinate.cordNumber == row && Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)<=2){
           move = true;
@@ -24,19 +23,26 @@ class Pawn extends Piece {
         }
       }
     } else if(newField != null && newField.team != "" && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
-      if( (this.team == "w" && this.coordinate.cordNumber-newCoordinate.cordNumber == 1) ||
-          (this.team == "b" && newCoordinate.cordNumber-this.coordinate.cordNumber == 1)){
+      if( (this.team === "w" && this.coordinate.cordNumber-newCoordinate.cordNumber === 1) ||
+          (this.team === "b" && newCoordinate.cordNumber-this.coordinate.cordNumber === 1)){
         move = true
       }
     }
     return move;
   }
 
-  print(){
-    if((this.team=="w" && this.coordinate.cordNumber == "1") || (this.team=="b" && this.coordinate.cordNumber == "8")){
+  print(newCoordinate){
+    this.update(newCoordinate);
+    return this.team+this.type;
+  }
+
+  update(newCoordinate){
+    if(
+        (this.team === "w" && newCoordinate.cordNumber === 0) ||
+        (this.team === "b" && newCoordinate.cordNumber === 7)
+      ){
       this.type="q";
     }
-    return this.team+this.type;
   }
 }
 
