@@ -2,9 +2,6 @@
 
 const path = require("path");
 const Command = require("../Command.js");
-const Chess = require(path.join(__dirname, '..', '/game/chess.js'));
-
-let games = {};
 
 module.exports = class PlayCommand extends Command {
   constructor(id,name) {
@@ -13,18 +10,17 @@ module.exports = class PlayCommand extends Command {
 
   async doExecute(m,user,command){
     console.time();
-
+    const bot = require("../../Bot.js").get();
+    const logic = bot.logic;
     m.setTitle("play_title");
 
     if(command.length >= 2){
-      if(games.hasOwnProperty(user.id)){
-        const game = games[user.id];
+      console.log(logic.games);
+      console.log(user.id);
+      if(logic.games.hasOwnProperty(user.id)){
+        const game = logic.games[user.id];
         if(command[1] == "ff"){
-          for(let p in game.players){
-            console.log(game.players[p].name);
-            delete games[game.players[p].name];
-          }
-          m.setDescription("Game deleted");
+          await logic.finishGame(0);
         } else {
           command.shift();
           const message = command.join("").toString().trim().toLowerCase();
@@ -53,23 +49,22 @@ module.exports = class PlayCommand extends Command {
           const response = await game.makeMove(user.id,cord1,cord2);
           m.text = response.text;
           if(response.status === false){
-            for(let p in game.players){
-              console.log(game.players[p].name);
-              delete games[game.players[p].name];
-            }
+            await logic.finishGame(game,response.winner);
+          } else {
+            await logic.saveGame(game);
           }
         }
       } else {
         const againts = command[1].replace(/[\\<>@#&!]/g, "");
-        if(againts.length && !games.hasOwnProperty(againts)){
-          const game = new Chess();
-          m.attachment = {
-            file: __dirname.replace("commands","game")+"/game.png" // Or replace with FileOptions object
-          };
-          games[againts] = game;
-          games[user.id] = game;
-          m.text = await game.start(user.id,againts);
-          console.log(m.text);
+        if(!isNaN(againts)){
+          m.text = await logic.startGame(user.id,againts);
+          if(m.text !== null){
+            m.attachment = {
+              file: __dirname.replace("commands","game")+"/game.png" // Or replace with FileOptions object
+            };
+          }
+        } else {
+          m.setDescription("play_error");    
         }
       }
     } else {

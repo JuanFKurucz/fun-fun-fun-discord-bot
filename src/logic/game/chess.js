@@ -10,7 +10,8 @@ const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
 
 class Chess {
-  constructor() {
+  constructor(id=null,state = null) {
+    this.id = id;
     this.playing=false;
     this.squareWidth = 80;
     this.squareHeight = 80;
@@ -19,8 +20,20 @@ class Chess {
       top:25,
       left:25
     };
-    this.board=new Board(this,JSON.parse(JSON.stringify(Board.startState)));
+    if(state === null){
+      this.board=new Board(this,JSON.parse(JSON.stringify(Board.startState)));
+    } else {
+      this.board=new Board(this,state);
+    }
     this.currentTurn=0;
+  }
+
+  getPlayer(team){
+    for(let p in this.players){
+      if(this.players[p].team == team){
+        return this.players[p];
+      }
+    }
   }
 
   nextTurn(){
@@ -107,14 +120,35 @@ class Chess {
     return {text:message,status:this.playing};
   }
 
+  load(white,black,turn){
+    const player1 = new Player(white);
+    const player2 = new Player(black);
+
+    this.players=[player1,player2];
+    this.playing=true;
+    this.players[0].assignColor("w");
+    this.players[1].assignColor("b");
+
+    if(turn === "w"){
+      this.currentTurn=0;
+    } else {
+      this.currentTurn=1;
+    }
+  }
+
   async start(id1,id2){
 
-    this.players=[new Player(id1),new Player(id2)];
+    const player1 = new Player(id1);
+    const player2 = new Player(id2);
+
+    this.players=[player1,player2];
     this.playing=true;
+
     let firstPlayer = Math.floor(Math.random() * this.players.length);
     this.players[firstPlayer].assignColor("w");
     this.currentTurn=firstPlayer;
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
+
     await this.draw();
     return "It's the turn of "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
   }
