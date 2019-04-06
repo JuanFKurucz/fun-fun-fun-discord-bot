@@ -15,8 +15,6 @@ module.exports = class PlayCommand extends Command {
     m.setTitle("play_title");
 
     if(command.length >= 2){
-      console.log(logic.games);
-      console.log(user.id);
       if(logic.games.hasOwnProperty(user.id)){
         const game = logic.games[user.id];
         if(command[1] == "ff"){
@@ -64,7 +62,7 @@ module.exports = class PlayCommand extends Command {
             };
           }
         } else {
-          m.setDescription("play_error");    
+          m.setDescription("play_error");
         }
       }
     } else {

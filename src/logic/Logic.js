@@ -29,7 +29,7 @@ module.exports = class Logic {
 
   async saveGame(game,winner=0){
     const db_game = await dbQuery("SELECT * FROM chess WHERE id_chess = ?",[game.id]);
-    console.log(db_game);
+    let time_now = (new Date()).getTime();
     if(db_game === null || !db_game.length){
       await dbQuery("INSERT INTO chess SET ?",{
         "active":game.playing,
@@ -37,14 +37,16 @@ module.exports = class Logic {
         "white":game.getPlayer("w").name,
         "black":game.getPlayer("b").name,
         "turn":game.getCurrentPlayer().team,
-        "winner":winner
+        "winner":winner,
+        "time_start":time_now
       });
     } else {
       await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
         "active":0,
         "state":JSON.stringify(game.state),
         "turn":game.getCurrentPlayer().team,
-        "winner":winner
+        "winner":winner,
+        "time_end":time_now
       });
     }
   }

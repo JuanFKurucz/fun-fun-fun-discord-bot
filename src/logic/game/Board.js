@@ -15,9 +15,11 @@ class Board {
 
   getPiece(coordinate){
     const text = this.state[coordinate.index];
-    const team = (text.length) ? text[0] : "";
-    const type = (text.length) ? text[1] : "";
-    return PieceConstructor.create(type,team,coordinate);
+    if(text != ""){
+      return PieceConstructor.create(text[1],text[0],coordinate);
+    } else {
+      return null;
+    }
   }
 
   checkMate(team,state){

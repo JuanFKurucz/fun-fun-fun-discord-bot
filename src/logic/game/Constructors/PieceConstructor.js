@@ -67,8 +67,8 @@ PieceConstructor.constructors = {
 };
 
 PieceConstructor.create = function(type,team,coordinate){
-  if(PieceConstructor.constructors.hasOwnProperty(type.toLowerCase())){
-    const constr = PieceConstructor.constructors[type.toLowerCase()];
+  if(PieceConstructor.constructors.hasOwnProperty(type)){
+    const constr = PieceConstructor.constructors[type];
     return new constr(
       team,
       coordinate,
