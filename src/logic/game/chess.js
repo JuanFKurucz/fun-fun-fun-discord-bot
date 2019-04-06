@@ -78,12 +78,12 @@ class Chess {
     let message = "";
     const currentPlayer = this.getPlayerById(player);
     if(currentPlayer !== null){
-      if(this.players.indexOf(currentPlayer) == this.currentTurn){
+      if(currentPlayer.name == this.getCurrentPlayer().name){
         if(coordinate.length==2 && new_coordinate.length==2){
           const cord = this.board.getCord(coordinate);
           const piece = this.board.getPiece(cord);
           if(piece!=null && piece.text!=""){
-            if(piece.team == currentPlayer.team){
+            if(piece.team == this.getCurrentPlayer().team){
               const new_cord = this.board.getCord(new_coordinate.toLowerCase());
               if(this.tryMakeMove(piece,new_cord)){
                 this.board.move(piece,new_cord);
