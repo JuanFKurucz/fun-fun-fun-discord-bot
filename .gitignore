@@ -62,3 +62,4 @@ typings/
 
 output/
 src/logic/game/output
+token.json
