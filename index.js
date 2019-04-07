@@ -1,7 +1,12 @@
 "use strict";
 
-const Main = require("./src/Main.js"),
-      tokenInfo = require("./token.json");
+const Main = require("./src/Main.js");
+
+require('dns').resolve('www.google.com', function(err) {
+  if (err) {
+     process.exit();
+  }
+});
 
 var Program = new Main();
-Program.start(tokenInfo["token"]);
+Program.start(process.env.TOKEN);

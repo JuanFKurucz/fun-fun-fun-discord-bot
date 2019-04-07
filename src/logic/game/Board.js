@@ -15,9 +15,6 @@ class Board {
 
   getPiece(coordinate){
     const text = this.state[coordinate.index];
-    console.info(coordinate);
-    console.info(this.state);
-    console.info(text);
     if(text != ""){
       return PieceConstructor.create(text[1],text[0],coordinate);
     } else {

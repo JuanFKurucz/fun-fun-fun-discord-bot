@@ -28,7 +28,6 @@ module.exports = class Logic {
   }
 
   async saveGame(game,winner=0){
-    const db_game = await dbQuery("SELECT * FROM chess WHERE id_chess = ?",[game.id]);
     const time_now = (new Date()).getTime();
     let playing;
     if(game.playing){
@@ -36,7 +35,7 @@ module.exports = class Logic {
     } else {
       playing=0;
     }
-    if(db_game === null || !db_game.length){
+    if(!game.id){
       console.log("inseration");
       const result = await dbQuery("INSERT INTO chess SET ?",{
         "active":playing,
@@ -47,13 +46,9 @@ module.exports = class Logic {
         "winner":winner,
         "time_start":time_now
       });
-      console.log(result);
-      if(result !== null){
-        game.id=result.insertId;
-      }
+      game.id=result.insertId;
     } else {
       console.log("update");
-      console.info("winner",winner);
       const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
         "active":playing,
         "state":JSON.stringify(game.board.state),
@@ -61,7 +56,6 @@ module.exports = class Logic {
         "winner":winner,
         "time_end":time_now
       });
-      console.info(result);
     }
   }
 
