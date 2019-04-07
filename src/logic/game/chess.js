@@ -80,12 +80,8 @@ class Chess {
     if(currentPlayer !== null){
       if(currentPlayer.name == this.getCurrentPlayer().name){
         if(coordinate.length==2 && new_coordinate.length==2){
-          console.info(this.board.state);
-          console.info(coordinate);
           const cord = this.board.getCord(coordinate);
-          console.info(cord);
           const piece = this.board.getPiece(cord);
-          console.info(piece);
           if(piece!=null){
             if(piece.team == this.getCurrentPlayer().team){
               const new_cord = this.board.getCord(new_coordinate.toLowerCase());
@@ -228,9 +224,13 @@ class Chess {
     await this.save();
   }
 
+  getGameImage(){
+    return __dirname+"/output/"+this.players[0].name+"-"+this.players[1].name+".png";
+  }
+
   async save(){
-    var optionalObj = {'fileName': 'game', 'type':'png'};
-    await base64ToImage(canvas.toDataURL(),__dirname+"/",optionalObj);
+    var optionalObj = {'fileName': this.players[0].name+"-"+this.players[1].name, 'type':'png'};
+    await base64ToImage(canvas.toDataURL(),__dirname+"/output/",optionalObj);
   }
 
   async draw(){

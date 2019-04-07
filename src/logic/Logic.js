@@ -30,10 +30,16 @@ module.exports = class Logic {
   async saveGame(game,winner=0){
     const db_game = await dbQuery("SELECT * FROM chess WHERE id_chess = ?",[game.id]);
     const time_now = (new Date()).getTime();
+    let playing;
+    if(game.playing){
+      playing=1;
+    } else {
+      playing=0;
+    }
     if(db_game === null || !db_game.length){
       console.log("inseration");
       const result = await dbQuery("INSERT INTO chess SET ?",{
-        "active":game.playing,
+        "active":playing,
         "state":JSON.stringify(game.board.state),
         "white":game.getPlayer("w").name,
         "black":game.getPlayer("b").name,
@@ -41,21 +47,28 @@ module.exports = class Logic {
         "winner":winner,
         "time_start":time_now
       });
-      game.id=result.insertId;
+      console.log(result);
+      if(result !== null){
+        game.id=result.insertId;
+      }
     } else {
       console.log("update");
-      await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
-        "active":game.playing,
+      console.info("winner",winner);
+      const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
+        "active":playing,
         "state":JSON.stringify(game.board.state),
         "turn":game.getCurrentPlayer().team,
         "winner":winner,
         "time_end":time_now
       });
+      console.info(result);
     }
   }
 
   async finishGame(game,winner){
-    await saveGame(game,winner);
+    console.log(winner);
+    game.playing=false;
+    await this.saveGame(game,winner);
     for(let p in game.players){
       delete this.games[game.players[p].name];
     }
@@ -78,8 +91,9 @@ module.exports = class Logic {
     const db_games = await dbQuery("SELECT * FROM chess WHERE active = 1");
     if(db_games !== null && db_games.length){
       for(let g in db_games){
-        const game = new Chess(db_games[g].id_chess,db_games[g].state);
+        const game = new Chess(db_games[g].id_chess,JSON.parse(db_games[g].state));
         game.load(db_games[g].white,db_games[g].black,db_games[g].turn);
+        game.id=db_games.id_chess;
         this.games[db_games[g].black] = game;
         this.games[db_games[g].white] = game;
       }

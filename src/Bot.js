@@ -117,11 +117,9 @@ module.exports = class Bot {
       console.log(response.text);
       console.log(response.attachment);
       if((response.text !== null && response.attachment !== null)){
-        console.log("this one");
         message = await msg.channel.send(response.text,response.attachment);
       } else {
-        console.log("not this one");
-        message = await msg.channel.send(response);
+        message = await msg.channel.send(response.message);
       }
       await user.setLastResponse(message);
       console.log("Message sent");
