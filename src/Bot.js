@@ -69,6 +69,7 @@ module.exports = class Bot {
     await this.logic.load();
     this.client.on("ready", async () => {
       console.log(`Logged in as ${this.client.user.tag}!`,1);
+      await this.logic.loadServers(await this.client.guilds.array());
       //await this.getUserGraph();
     });
     this.client.on("message", (msg) => {
@@ -92,12 +93,11 @@ module.exports = class Bot {
     const text = msg.content+"";
     let response = null,
         command;
-
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
     if(this.isACommand(text)){
-      response = new Message(user); //Instances a new discord RichEmbed;
+      response = new Message(msg.channel.guild.id,msg.channel.id,user); //Instances a new discord RichEmbed;
 
       console.log(msg.author.id +" sent "+msg.content,1);
 

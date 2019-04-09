@@ -7,19 +7,33 @@ Every message from Discord is setn to read function, where it creates the player
 and handles the message with commandHandler.
 **/
 
-const User = require(__dirname+"/User.js"),
-{ dbQuery } = require("../DataBase.js"),
-CommandConstructor = require(__dirname+"/constructors/CommandConstructor.js"),
-Language = require("../Language.js"),
-Chess = require("./game/chess.js");
+const User = require(__dirname+"/User.js");
+const Server = require(__dirname+"/Server.js");
+const { dbQuery } = require("../DataBase.js");
+const CommandConstructor = require(__dirname+"/constructors/CommandConstructor.js");
+const Language = require("../Language.js");
+const Chess = require("./game/chess.js");
 
 module.exports = class Logic {
   constructor(prefix) {
+    this.servers = {};
     this.users = {};
     this.games = {};
     this.commandConstructor = new CommandConstructor(prefix);
     this.commands = this.commandConstructor.initCommands();
     this.lanCommands = Language.getCommands();
+  }
+
+  async getServer(id){
+    if(this.servers.hasOwnProperty(id)){
+      return this.servers[id];
+    } else {
+      const s = Server.get(id);
+      if(s !== null){
+        this.servers[id] = s;
+      }
+      return s;
+    }
   }
 
   async deleteUser(user){
@@ -91,6 +105,14 @@ module.exports = class Logic {
         this.games[db_games[g].black] = game;
         this.games[db_games[g].white] = game;
       }
+    }
+  }
+
+  async loadServers(guilds){
+    let lengthGuilds = guilds.length;
+    for(let g = 0; g < lengthGuilds; g++){
+      this.servers[guilds[g].id] = new Server(guilds[g].id);
+      await this.servers[guilds[g].id].load();
     }
   }
 

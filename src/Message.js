@@ -4,8 +4,10 @@ const Language = require("./Language.js"),
       RichEmbed = require("discord.js").RichEmbed;
 
 module.exports = class Message {
-  constructor(user) {
-    this.owner=user;
+  constructor(server,channel,user) {
+    this.owner = user;
+    this.server = server;
+    this.channel = channel;
     this.language = this.owner.getLanguage();
     this.text = null;
     this.attachment = null;

@@ -2,10 +2,10 @@
   "enabled":true,
   "options":[{
     "connectionLimit": 100,
-    "host": "sql162.main-hosting.eu",
-    "user": "u445046979_f3",
-    "password": "J1t`W[536o9rU/~X0:",
-    "database": "u445046979_f3",
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "f3",
     "debug": false
   }]
 }

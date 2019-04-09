@@ -1,4 +1,7 @@
 {
+  "command_setchannel":"setchannel",
+  "command_removechannel":"removechannel",
+
   "command_play":"chess",
   "command_buy_description":"Chess",
   "command_error":"error",
