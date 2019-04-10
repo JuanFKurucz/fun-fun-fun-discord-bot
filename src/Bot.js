@@ -12,6 +12,7 @@ const Discord = require("discord.js"),
       Logic = require(__dirname+"/logic/Logic.js"),
       {config} = require("./Configuration.js"),
       Graph = require("./graph/Graph.js");
+const Server = require("./logic/Server.js");
 
 let BotObject = null;
 
@@ -96,13 +97,18 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    if(this.isACommand(text)){
+    const server = await this.logic.getServer(msg.channel.guild.id);
+    const boolDesignatedChannel = server.channels.hasOwnProperty(msg.channel.id);
+    console.info(server.channels);
+    console.info(boolDesignatedChannel);
+    if(this.isACommand(text) || boolDesignatedChannel){
       response = new Message(msg.channel.guild.id,msg.channel.id,user); //Instances a new discord RichEmbed;
-
       console.log(msg.author.id +" sent "+msg.content,1);
-
       command = text.substring(this.prefix.length,text.length).toLowerCase().split(" "); //Splits the text of the message in spaces removing the prefix out of it
-
+      if(boolDesignatedChannel){
+        command.unshift(server.channels[msg.channel.id]);
+      }
+      console.info(command);
       console.time();
 
       await this.logic.getCommand(command[0],user).execute(response,user,command); //gets the command using the first string in the splitteed message and executes it
