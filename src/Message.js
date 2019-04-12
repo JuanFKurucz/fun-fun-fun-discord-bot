@@ -10,6 +10,7 @@ module.exports = class Message {
     this.channel = channel;
     this.language = this.owner.getLanguage();
     this.text = null;
+    this.send = true;
     this.attachment = null;
     this.message = new RichEmbed();
     this.message.setFooter(this.owner.getName(),this.owner.getAvatar());

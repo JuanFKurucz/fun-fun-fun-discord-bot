@@ -1,17 +1,17 @@
 "use strict";
 
 /**
-  This is the BotClass, pretty similar to the LogicClass (i might merge them or something later)
+This is the BotClass, pretty similar to the LogicClass (i might merge them or something later)
 
-  This handles discord.js library, basically the connection to the Discord Server as a bot, getting messages and such.
-  Nothing much to see here, every message is sent to the LogicClass
+This handles discord.js library, basically the connection to the Discord Server as a bot, getting messages and such.
+Nothing much to see here, every message is sent to the LogicClass
 **/
 
 const Discord = require("discord.js"),
-      Message = require("./Message.js"), //https://discord.js.org/#/docs/main/stable/class/RichEmbed
-      Logic = require(__dirname+"/logic/Logic.js"),
-      {config} = require("./Configuration.js"),
-      Graph = require("./graph/Graph.js");
+Message = require("./Message.js"), //https://discord.js.org/#/docs/main/stable/class/RichEmbed
+Logic = require(__dirname+"/logic/Logic.js"),
+{config} = require("./Configuration.js"),
+Graph = require("./graph/Graph.js");
 const Server = require("./logic/Server.js");
 
 let BotObject = null;
@@ -42,15 +42,15 @@ module.exports = class Bot {
 
   async getUserGraph(){
     let users = await this.client.users.array(),
-        lengthUsers = users.length;
+    lengthUsers = users.length;
     for(let u=0;u<lengthUsers;u++){
       this.userGraph.addNode(users[u].id,users[u]);
     }
     let guilds = await this.client.guilds.array(),
-        lengthGuilds = guilds.length;
+    lengthGuilds = guilds.length;
     for(let g=0;g<lengthGuilds;g++){
       let guildUsers = await guilds[g].members.array(),
-          lengthGuildUsers = guildUsers.length;
+      lengthGuildUsers = guildUsers.length;
       for(let u=0;u<lengthGuildUsers;u++){
         let node = this.userGraph.getNode(guildUsers[u].id);
         if(node!==null){
@@ -84,31 +84,29 @@ module.exports = class Bot {
   }
 
   /**
-    commandHandler:
+  commandHandler:
 
-    This function gets a Discord Message object (https://discord.js.org/#/docs/main/stable/class/Message) as the only parameter
-    With this Message it will decide if the content of the message is a command for the bot (if it starts with the prefix).
-    It will execute the command for the prefix if it has one, if it doesn't it will do nothing instead.
+  This function gets a Discord Message object (https://discord.js.org/#/docs/main/stable/class/Message) as the only parameter
+  With this Message it will decide if the content of the message is a command for the bot (if it starts with the prefix).
+  It will execute the command for the prefix if it has one, if it doesn't it will do nothing instead.
   **/
   async commandHandler(msg,user){
     const text = msg.content+"";
     let response = null,
-        command;
+    command;
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
     const server = await this.logic.getServer(msg.channel.guild.id);
     const boolDesignatedChannel = server.channels.hasOwnProperty(msg.channel.id);
-    console.info(server.channels);
-    console.info(boolDesignatedChannel);
     if(this.isACommand(text) || boolDesignatedChannel){
       response = new Message(msg.channel.guild.id,msg.channel.id,user); //Instances a new discord RichEmbed;
       console.log(msg.author.id +" sent "+msg.content,1);
-      command = text.substring(this.prefix.length,text.length).toLowerCase().split(" "); //Splits the text of the message in spaces removing the prefix out of it
+      command = text.toLowerCase().split(" ");
       if(boolDesignatedChannel){
-        command.unshift(server.channels[msg.channel.id]);
+        command.unshift(this.prefix+server.channels[msg.channel.id]);
       }
-      console.info(command);
+      command[0] = command[0].substring(this.prefix.length,command[0].length); //Splits the text of the message in spaces removing the prefix out of it
       console.time();
 
       await this.logic.getCommand(command[0],user).execute(response,user,command); //gets the command using the first string in the splitteed message and executes it
@@ -120,15 +118,15 @@ module.exports = class Bot {
   async sendMessage(msg,response,user){
     try{
       let message;
-      console.log(response.text);
-      console.log(response.attachment);
-      if((response.text !== null && response.attachment !== null)){
-        message = await msg.channel.send(response.text,response.attachment);
-      } else {
-        message = await msg.channel.send(response.message);
+      if(response.send){
+        if((response.text !== null && response.attachment !== null)){
+          message = await msg.channel.send(response.text,response.attachment);
+        } else {
+          message = await msg.channel.send(response.message);
+        }
+        await user.setLastResponse(message);
+        console.log("Message sent");
       }
-      await user.setLastResponse(message);
-      console.log("Message sent");
     } catch(e){
       console.error(e);
     }
