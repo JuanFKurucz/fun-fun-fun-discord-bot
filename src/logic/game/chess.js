@@ -11,8 +11,8 @@ const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
 
 class Chess {
-  constructor(id=null,state = null, movements = null) {
-    this.id = id;
+  constructor(id_chess=null,state = null, movements = null) {
+    this.id = id_chess;
     this.playing=false;
     this.squareWidth = 80;
     this.squareHeight = 80;

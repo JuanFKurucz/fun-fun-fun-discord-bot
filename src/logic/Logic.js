@@ -49,7 +49,7 @@ module.exports = class Logic {
     } else {
       playing=0;
     }
-    if(!game.id){
+    if(game.id === null){
       console.log("insert");
       const result = await dbQuery("INSERT INTO chess SET ?",{
         "active":playing,
@@ -103,7 +103,6 @@ module.exports = class Logic {
       for(let g in db_games){
         const game = new Chess(db_games[g].id_chess,JSON.parse(db_games[g].state),JSON.parse(db_games[g].movements));
         game.load(db_games[g].white,db_games[g].black,db_games[g].turn);
-        game.id=db_games.id_chess;
         this.games[db_games[g].black] = game;
         this.games[db_games[g].white] = game;
       }

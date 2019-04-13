@@ -4,9 +4,9 @@ const Coordinate = require("./Coordinate");
 const PieceConstructor = require("./Constructors/PieceConstructor");
 
 class Board {
-  constructor(game,state){
+  constructor(game,state,movements){
     this.state = state;
-    this.movements = [];
+    this.movements = (movements!== null) ? movements : [];
     this.parent = game;
   }
 

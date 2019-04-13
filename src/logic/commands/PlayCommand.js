@@ -12,7 +12,7 @@ module.exports = class PlayCommand extends Command {
     console.time();
     const bot = require("../../Bot.js").get();
     const logic = bot.logic;
-    m.setTitle("play_title");
+    m.setTitle("Chess");
     const againts = command[1].replace(/[\\<>@#&!]/g, "");
     if(command.length >= 2){
       if(command[1][0]==bot.prefix){
@@ -67,8 +67,9 @@ module.exports = class PlayCommand extends Command {
                 const response = await game.possibleMoves(user.id,cord1);
                 m.text = response.text;
               } else {
-                await game.draw();
-                m.text = "The coordinates are wrong";
+                m.send = false;
+            //    await game.draw();
+            //    m.text = "The coordinates are wrong";
               }
             }
           } else {
@@ -84,7 +85,7 @@ module.exports = class PlayCommand extends Command {
               };
             }
           } else {
-            m.setDescription("play_error");
+            m.setDescription("You are not in a game and we couldn't start one with your message");
           }
         }
       }
