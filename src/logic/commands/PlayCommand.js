@@ -2,6 +2,7 @@
 
 const path = require("path");
 const Command = require("../Command.js");
+const Message = require("../../Message.js");
 
 module.exports = class PlayCommand extends Command {
   constructor(id,name) {
@@ -68,8 +69,8 @@ module.exports = class PlayCommand extends Command {
                 m.text = response.text;
               } else {
                 m.send = false;
-            //    await game.draw();
-            //    m.text = "The coordinates are wrong";
+                //    await game.draw();
+                //    m.text = "The coordinates are wrong";
               }
             }
           } else {
@@ -77,13 +78,33 @@ module.exports = class PlayCommand extends Command {
           }
         } else {
           if(!isNaN(againts)){
-            m.text = await logic.startGame(user.id,againts);
-            if(m.text !== null){
-              const game = logic.games[user.id];
-              m.attachment = {
-                file: game.getGameImage() // Or replace with FileOptions object
-              };
-            }
+            m.reactions = ["✔","❌"];
+            m.savedStuff = {
+              "users":[user.id,againts]
+            };
+            m.reactionCallback = async function(m,collected){
+              if(collected === false){
+                await m.sentMessage.channel.send("Invitation to play expired");
+              } else {
+                const reaction = collected.first();
+                if (reaction.emoji.name === m.reactions[0]) {
+                  const newMessage = new Message(m.server,m.channel,m.owner);
+                  newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
+                  if(newMessage.text !== null){
+                    const game = logic.games[user.id];
+                    newMessage.attachment = {
+                      file: game.getGameImage() // Or replace with FileOptions object
+                    };
+                    await m.sentMessage.channel.send(newMessage.text,newMessage.attachment);
+                  } else {
+                    await m.sentMessage.channel.send("Unexpected error");
+                  }
+                } else {
+                  await m.sentMessage.channel.send("Invitation denied");
+                }
+              }
+            };
+            m.text = "Hey <@!"+againts+">, <@!"+user.id+"> invited you to a chess game. Do you wanna play? Answer reacting to this message";
           } else {
             m.setDescription("You are not in a game and we couldn't start one with your message");
           }
