@@ -86,7 +86,7 @@ module.exports = class PlayCommand extends Command {
             m.reactionCallback = async function(m,collected){
               await m.sentMessage.clearReactions();
               if(collected === false){
-                await m.sentMessage.edit("Invitation to play expired");
+                await m.sentMessage.edit("Invitation to play from <@!"+m.savedStuff["users"][0]+"> to <@!"+m.savedStuff["users"][1]+"> expired");
               } else {
                 const reaction = collected.first();
                 if (reaction.emoji.name === m.reactions[0]) {
@@ -102,7 +102,7 @@ module.exports = class PlayCommand extends Command {
                     await m.sentMessage.edit("Unexpected error");
                   }
                 } else {
-                  await m.sentMessage.edit("Invitation denied");
+                  await m.sentMessage.edit("Invitation from <@!"+m.savedStuff["users"][0]+"> to <@!"+m.savedStuff["users"][1]+"> denied");
                 }
               }
             };
