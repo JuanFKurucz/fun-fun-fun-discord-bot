@@ -82,9 +82,11 @@ module.exports = class PlayCommand extends Command {
             m.savedStuff = {
               "users":[user.id,againts]
             };
+            m.reactionTarget=[againts];
             m.reactionCallback = async function(m,collected){
+              await m.sentMessage.clearReactions();
               if(collected === false){
-                await m.sentMessage.channel.send("Invitation to play expired");
+                await m.sentMessage.edit("Invitation to play expired");
               } else {
                 const reaction = collected.first();
                 if (reaction.emoji.name === m.reactions[0]) {
@@ -97,10 +99,10 @@ module.exports = class PlayCommand extends Command {
                     };
                     await m.sentMessage.channel.send(newMessage.text,newMessage.attachment);
                   } else {
-                    await m.sentMessage.channel.send("Unexpected error");
+                    await m.sentMessage.edit("Unexpected error");
                   }
                 } else {
-                  await m.sentMessage.channel.send("Invitation denied");
+                  await m.sentMessage.edit("Invitation denied");
                 }
               }
             };

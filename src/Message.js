@@ -16,6 +16,7 @@ module.exports = class Message {
     this.message = new RichEmbed();
     this.message.setFooter(this.owner.getName(),this.owner.getAvatar());
     this.reactions = reaction;
+    this.reactionTarget=[];
     this.reactionCallback = null;
     this.reactionFinished = false;
     this.sentMessage = null;
@@ -31,7 +32,7 @@ module.exports = class Message {
 
   async handleReactions(){
     const filter = (reaction, user) => {
-      return this.reactions.includes(reaction.emoji.name) && user.id === this.owner.id;
+      return this.reactions.includes(reaction.emoji.name) && this.reactionTarget.indexOf(user.id) !== -1;
     };
 
     this.sentMessage.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
