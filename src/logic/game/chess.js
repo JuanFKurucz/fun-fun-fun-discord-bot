@@ -75,6 +75,33 @@ class Chess {
     return null;
   }
 
+  async possibleMoves(player,coordinate){
+    let message = "";
+    const currentPlayer = this.getPlayerById(player);
+    if(currentPlayer !== null){
+      if(coordinate.length==2){
+        const cord = this.board.getCord(coordinate);
+        const piece = this.board.getPiece(cord);
+        if(piece!=null){
+          const moves = this.board.possibleMoves(piece);
+          if(moves.length===0){
+            message=currentPlayer.mention()+", the piece can't be moved";
+          } else {
+            await this.draw(moves);
+            message=currentPlayer.mention()+", moves are marked with a green circle";
+          }
+        } else {
+          message=currentPlayer.mention()+" that's an empty field";
+        }
+      } else {
+        message=currentPlayer.mention()+" the coordinate is wrong";
+      }
+    } else {
+      message="Unexpected error";
+    }
+    return {text:message,status:this.playing};
+  }
+
   async makeMove(player,coordinate,new_coordinate){
     let message = "";
     const currentPlayer = this.getPlayerById(player);
@@ -90,16 +117,15 @@ class Chess {
                 this.board.movements.push(cord.text+""+new_cord.text);
                 this.board.move(piece,new_cord);
                 this.nextTurn();
-                await this.draw();
                 if(this.board.kingInCheck(this.getCurrentPlayer().team,this.board.state)){
                   if(this.board.checkMate(this.getCurrentPlayer().team,this.board.state)){
                     this.playing=false;
                     message="Game ended, winner: "+this.getOtherPlayer().mention();
                   } else {
-                    message="Next turn: be aware your king is in check "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+                    message="Next turn: be aware your king is in check "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam()+"\nPast move blue circle to red circle";
                   }
                 } else {
-                  message="Next turn "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+                  message="Next turn "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam()+"\nPast move blue circle to red circle";
                 }
               } else {
                 message=currentPlayer.mention()+" you can't make this move";
@@ -187,11 +213,18 @@ class Chess {
     }
   }
 
-  drawBackGround(){
+  drawBackGround(moves){
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, width, height);
     let x=0;
     let y=0;
+
+    const realMoves = [];
+    if(moves !== null){
+      for(let m in moves){
+        realMoves.push(moves[m].text);
+      }
+    }
 
     const lastMove = (this.board.movements.length) ? this.board.movements[this.board.movements.length-1] : null;
     const cord1 = (lastMove != null) ? lastMove.substring(0,2) : null;
@@ -202,33 +235,41 @@ class Chess {
       y=parseInt(i/8);
       if(cord1 !== null && cord2 !== null){
         if(Coordinate.all[i]==cord1){
-          border = "blue";
+          border = "rgba(0, 0, 255, 0.3)";
         } else if(Coordinate.all[i]==cord2){
-          border = "red";
+          border = "rgba(255, 0, 0, 0.3)";
         } else {
           border = "";
         }
       }
-      ctx.fillStyle = border;
-      if(border !== ""){
-        ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
-      }
+
       if(y%this.squareColors.length==0){
         ctx.fillStyle = this.squareColors[i%this.squareColors.length];
       } else {
         ctx.fillStyle = this.squareColors[((1+i)%this.squareColors.length)];
       }
+
+      ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+
       if(border !== ""){
-        ctx.fillRect(
-          this.margins.left+x*(this.squareWidth)+2,
-          this.margins.top+y*(this.squareHeight)+2,
-          this.squareWidth-4,
-          this.squareHeight-4
-        );
-      } else {
-        ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+        ctx.fillStyle = border;
+        ctx.beginPath();
+        ctx.arc(
+          (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
+          (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
+          parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
+        ctx.fill();
       }
 
+      if(realMoves.indexOf(Coordinate.all[i]) !== -1){
+        ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+        ctx.beginPath();
+        ctx.arc(
+          (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
+          (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
+          parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
     }
   }
 
@@ -263,8 +304,8 @@ class Chess {
     await base64ToImage(canvas.toDataURL(),__dirname+"/output/",optionalObj);
   }
 
-  async draw(){
-    this.drawBackGround();
+  async draw(moves=null){
+    this.drawBackGround(moves);
     this.drawCoordinates();
     await this.drawGame(this.state);
     await this.save();

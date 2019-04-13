@@ -38,28 +38,37 @@ module.exports = class PlayCommand extends Command {
                   realCords.push(message[m]);
                 }
               }
-              m.attachment = {
-                file: game.getGameImage() // Or replace with FileOptions object
-              };
               let cord1 = "";
-              let cord2 = "";
               if(isNaN(realCords[0])){
                 cord1=realCords[0]+""+(9-parseInt(realCords[1]));
               } else {
                 cord1=realCords[1]+""+(9-parseInt(realCords[0]));
               }
-              if(isNaN(realCords[2])){
-                cord2=realCords[2]+""+(9-parseInt(realCords[3]));
+              m.attachment = {
+                file: game.getGameImage() // Or replace with FileOptions object
+              };
+              if(message.length==4){
+                let cord2 = "";
+                if(isNaN(realCords[2])){
+                  cord2=realCords[2]+""+(9-parseInt(realCords[3]));
+                } else {
+                  cord2=realCords[3]+""+(9-parseInt(realCords[2]));
+                }
+                console.info(cord1+","+cord2);
+                const response = await game.makeMove(user.id,cord1,cord2);
+                m.text = response.text;
+                if(response.status === false){
+                  await logic.finishGame(game,response.winner);
+                } else {
+                  await logic.saveGame(game);
+                }
+                await game.draw();
+              } else if(message.length == 2){
+                const response = await game.possibleMoves(user.id,cord1);
+                m.text = response.text;
               } else {
-                cord2=realCords[3]+""+(9-parseInt(realCords[2]));
-              }
-              console.info(cord1+","+cord2);
-              const response = await game.makeMove(user.id,cord1,cord2);
-              m.text = response.text;
-              if(response.status === false){
-                await logic.finishGame(game,response.winner);
-              } else {
-                await logic.saveGame(game);
+                await game.draw();
+                m.text = "The coordinates are wrong";
               }
             }
           } else {
