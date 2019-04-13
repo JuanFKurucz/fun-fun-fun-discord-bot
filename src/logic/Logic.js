@@ -50,10 +50,11 @@ module.exports = class Logic {
       playing=0;
     }
     if(!game.id){
-      console.log("inseration");
+      console.log("insert");
       const result = await dbQuery("INSERT INTO chess SET ?",{
         "active":playing,
         "state":JSON.stringify(game.board.state),
+        "movements":JSON.stringify(game.board.movements),
         "white":game.getPlayer("w").name,
         "black":game.getPlayer("b").name,
         "turn":game.getCurrentPlayer().team,
@@ -66,6 +67,7 @@ module.exports = class Logic {
       const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
         "active":playing,
         "state":JSON.stringify(game.board.state),
+        "movements":JSON.stringify(game.board.movements),
         "turn":game.getCurrentPlayer().team,
         "winner":winner,
         "time_end":time_now
@@ -99,7 +101,7 @@ module.exports = class Logic {
     const db_games = await dbQuery("SELECT * FROM chess WHERE active = 1");
     if(db_games !== null && db_games.length){
       for(let g in db_games){
-        const game = new Chess(db_games[g].id_chess,JSON.parse(db_games[g].state));
+        const game = new Chess(db_games[g].id_chess,JSON.parse(db_games[g].state),JSON.parse(db_games[g].movements));
         game.load(db_games[g].white,db_games[g].black,db_games[g].turn);
         game.id=db_games.id_chess;
         this.games[db_games[g].black] = game;

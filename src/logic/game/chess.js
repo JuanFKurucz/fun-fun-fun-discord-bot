@@ -1,4 +1,5 @@
 "use strict";
+const Coordinate = require('./Coordinate');
 const Player = require('./player');
 const Board = require('./Board');
 const Data = require('./data.json');
@@ -10,7 +11,7 @@ const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
 
 class Chess {
-  constructor(id=null,state = null) {
+  constructor(id=null,state = null, movements = null) {
     this.id = id;
     this.playing=false;
     this.squareWidth = 80;
@@ -21,9 +22,9 @@ class Chess {
       left:25
     };
     if(state === null){
-      this.board=new Board(this,JSON.parse(JSON.stringify(Board.startState)));
+      this.board=new Board(this,JSON.parse(JSON.stringify(Board.startState)),[]);
     } else {
-      this.board=new Board(this,state);
+      this.board=new Board(this,state,movements);
     }
     this.currentTurn=0;
   }
@@ -86,6 +87,7 @@ class Chess {
             if(piece.team == this.getCurrentPlayer().team){
               const new_cord = this.board.getCord(new_coordinate.toLowerCase());
               if(this.tryMakeMove(piece,new_cord)){
+                this.board.movements.push(cord.text+""+new_cord.text);
                 this.board.move(piece,new_cord);
                 this.nextTurn();
                 await this.draw();
@@ -190,15 +192,43 @@ class Chess {
     ctx.fillRect(0, 0, width, height);
     let x=0;
     let y=0;
+
+    const lastMove = (this.board.movements.length) ? this.board.movements[this.board.movements.length-1] : null;
+    const cord1 = (lastMove != null) ? lastMove.substring(0,2) : null;
+    const cord2 = (lastMove != null) ? lastMove.substring(2,4) : null;
+    let border = "";
     for(let i=0;i<64;i++){
       x=i%8;
       y=parseInt(i/8);
+      if(cord1 !== null && cord2 !== null){
+        if(Coordinate.all[i]==cord1){
+          border = "blue";
+        } else if(Coordinate.all[i]==cord2){
+          border = "red";
+        } else {
+          border = "";
+        }
+      }
+      ctx.fillStyle = border;
+      if(border !== ""){
+        ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+      }
       if(y%this.squareColors.length==0){
         ctx.fillStyle = this.squareColors[i%this.squareColors.length];
       } else {
         ctx.fillStyle = this.squareColors[((1+i)%this.squareColors.length)];
       }
-      ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+      if(border !== ""){
+        ctx.fillRect(
+          this.margins.left+x*(this.squareWidth)+2,
+          this.margins.top+y*(this.squareHeight)+2,
+          this.squareWidth-4,
+          this.squareHeight-4
+        );
+      } else {
+        ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+      }
+
     }
   }
 

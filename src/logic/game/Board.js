@@ -6,6 +6,7 @@ const PieceConstructor = require("./Constructors/PieceConstructor");
 class Board {
   constructor(game,state){
     this.state = state;
+    this.movements = [];
     this.parent = game;
   }
 
