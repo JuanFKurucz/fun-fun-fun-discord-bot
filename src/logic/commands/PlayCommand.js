@@ -108,7 +108,8 @@ module.exports = class PlayCommand extends Command {
             };
             m.text = "Hey <@!"+againts+">, <@!"+user.id+"> invited you to a chess game. Do you wanna play? Answer reacting to this message";
           } else {
-            m.setDescription("You are not in a game and we couldn't start one with your message");
+            m.send = false;
+            //m.setDescription("You are not in a game and we couldn't start one with your message");
           }
         }
       }

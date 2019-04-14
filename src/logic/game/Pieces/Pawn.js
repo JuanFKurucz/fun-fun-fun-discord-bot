@@ -22,7 +22,7 @@ class Pawn extends Piece {
           move = true;
         }
       }
-    } else if(newField != null && newField.team != "" && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
+    } else if(newField != null && newField.team != "" && newField.team != this.team && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
       if( (this.team === "w" && this.coordinate.cordNumber-newCoordinate.cordNumber === 1) ||
           (this.team === "b" && newCoordinate.cordNumber-this.coordinate.cordNumber === 1)){
         move = true
