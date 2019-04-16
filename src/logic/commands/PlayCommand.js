@@ -67,6 +67,7 @@ module.exports = class PlayCommand extends Command {
               } else if(message.length == 2){
                 const response = await game.possibleMoves(user.id,cord1);
                 m.text = response.text;
+                await game.draw();
               } else {
                 m.send = false;
                 //    await game.draw();

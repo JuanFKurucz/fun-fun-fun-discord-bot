@@ -1,4 +1,5 @@
 "use strict";
+const path = require("path");
 const Coordinate = require('./Coordinate');
 const Player = require('./player');
 const Board = require('./Board');
@@ -288,7 +289,7 @@ class Chess {
       if(this.board.state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const image = await this.getImage(__dirname+"/images/"+this.board.state[i]+".png");
+        const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
         ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
     }
@@ -296,12 +297,12 @@ class Chess {
   }
 
   getGameImage(){
-    return __dirname+"/output/"+this.players[0].name+"-"+this.players[1].name+".png";
+    return path.join(__dirname, 'output/',this.players[0].name+"-"+this.players[1].name+".png");
   }
 
   async save(){
     var optionalObj = {'fileName': this.players[0].name+"-"+this.players[1].name, 'type':'png'};
-    await base64ToImage(canvas.toDataURL(),"./output/",optionalObj);
+    await base64ToImage(canvas.toDataURL(),path.join(__dirname, 'output/'),optionalObj);
   }
 
   async draw(moves=null){
