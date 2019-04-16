@@ -301,7 +301,7 @@ class Chess {
 
   async save(){
     var optionalObj = {'fileName': this.players[0].name+"-"+this.players[1].name, 'type':'png'};
-    await base64ToImage(canvas.toDataURL(),__dirname+"/output/",optionalObj);
+    await base64ToImage(canvas.toDataURL(),"./output/",optionalObj);
   }
 
   async draw(moves=null){
