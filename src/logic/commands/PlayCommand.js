@@ -3,6 +3,7 @@
 const path = require("path");
 const Command = require("../Command.js");
 const Message = require("../../Message.js");
+const Attachment = require("discord.js").Attachment;
 
 module.exports = class PlayCommand extends Command {
   constructor(id,name) {
@@ -45,9 +46,6 @@ module.exports = class PlayCommand extends Command {
               } else {
                 cord1=realCords[1]+""+(9-parseInt(realCords[0]));
               }
-              m.attachment = {
-                file: game.getGameImage() // Or replace with FileOptions object
-              };
               if(message.length==4){
                 let cord2 = "";
                 if(isNaN(realCords[2])){
@@ -58,20 +56,19 @@ module.exports = class PlayCommand extends Command {
                 console.info(cord1+","+cord2);
                 const response = await game.makeMove(user.id,cord1,cord2);
                 m.text = response.text;
+                m.attachment = new Attachment(await game.draw(),"chess.png");
                 if(response.status === false){
                   await logic.finishGame(game,response.winner);
                 } else {
                   await logic.saveGame(game);
                 }
-                await game.draw();
               } else if(message.length == 2){
                 const response = await game.possibleMoves(user.id,cord1);
                 m.text = response.text;
-                await game.draw();
+                m.attachment = new Attachment(response.buffer,"chess.png");
+                await logic.saveGame(game);
               } else {
                 m.send = false;
-                //    await game.draw();
-                //    m.text = "The coordinates are wrong";
               }
             }
           } else {
@@ -95,9 +92,7 @@ module.exports = class PlayCommand extends Command {
                   newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
                   if(newMessage.text !== null){
                     const game = logic.games[user.id];
-                    newMessage.attachment = {
-                      file: game.getGameImage() // Or replace with FileOptions object
-                    };
+                    newMessage.attachment = new Attachment(await game.draw(),"chess.png");
                     await m.sentMessage.channel.send(newMessage.text,newMessage.attachment);
                   } else {
                     await m.sentMessage.edit("Unexpected error");

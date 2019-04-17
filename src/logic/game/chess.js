@@ -78,6 +78,7 @@ class Chess {
 
   async possibleMoves(player,coordinate){
     let message = "";
+    let bufferImage;
     const currentPlayer = this.getPlayerById(player);
     if(currentPlayer !== null){
       if(coordinate.length==2){
@@ -88,7 +89,7 @@ class Chess {
           if(moves.length===0){
             message=currentPlayer.mention()+", the piece can't be moved";
           } else {
-            await this.draw(moves);
+            bufferImage = await this.draw(moves);
             message=currentPlayer.mention()+", moves are marked with a green circle";
           }
         } else {
@@ -100,7 +101,7 @@ class Chess {
     } else {
       message="Unexpected error";
     }
-    return {text:message,status:this.playing};
+    return {buffer:bufferImage,text:message,status:this.playing};
   }
 
   async makeMove(player,coordinate,new_coordinate){
@@ -259,58 +260,52 @@ class Chess {
           (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
           (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
           parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
-        ctx.fill();
+          ctx.fill();
+        }
+
+        if(realMoves.indexOf(Coordinate.all[i]) !== -1){
+          ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+          ctx.beginPath();
+          ctx.arc(
+            (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
+            (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
+            parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+        }
       }
 
-      if(realMoves.indexOf(Coordinate.all[i]) !== -1){
-        ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
-        ctx.beginPath();
-        ctx.arc(
-          (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
-          (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
-          parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
-        ctx.fill();
+      async getImage(path){
+        return await (new Promise(function(resolve,reject){
+          loadImage(path).then((image) => {
+            resolve(image);
+          });
+        }));
       }
-    }
-  }
 
-  async getImage(path){
-    return await (new Promise(function(resolve,reject){
-      loadImage(path).then((image) => {
-        resolve(image);
-      });
-    }));
-  }
-
-  async drawGame(){
-    let x=0;
-    let y=0;
-    for(let i in this.board.state){
-      if(this.board.state[i]){
-        x=i%8;
-        y=parseInt(i/8);
-        const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
-        ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
+      async drawGame(){
+        let x=0;
+        let y=0;
+        for(let i in this.board.state){
+          if(this.board.state[i]){
+            x=i%8;
+            y=parseInt(i/8);
+            const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
+            ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
+          }
+        }
       }
-    }
-    await this.save();
-  }
 
-  getGameImage(){
-    return path.join(__dirname, 'output/',this.players[0].name+"-"+this.players[1].name+".png");
-  }
+      save(){
+        return canvas.toBuffer();
+      }
 
-  async save(){
-    var optionalObj = {'fileName': this.players[0].name+"-"+this.players[1].name, 'type':'png'};
-    await base64ToImage(canvas.toDataURL(),path.join(__dirname, 'output/'),optionalObj);
-  }
+      async draw(moves=null){
+        this.drawBackGround(moves);
+        this.drawCoordinates();
+        await this.drawGame(this.state);
+        return this.save();
+      }
+    };
 
-  async draw(moves=null){
-    this.drawBackGround(moves);
-    this.drawCoordinates();
-    await this.drawGame(this.state);
-    await this.save();
-  }
-};
-
-module.exports = Chess;
+    module.exports = Chess;
