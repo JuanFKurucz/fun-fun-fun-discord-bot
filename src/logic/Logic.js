@@ -61,7 +61,13 @@ module.exports = class Logic {
         "winner":winner,
         "time_start":time_now
       });
-      game.id=result.insertId;
+      if(result){
+        game.id=result.insertId;
+      } else {
+        for(let p in game.players){
+          delete this.games[game.players[p].name];
+        }
+      }
     } else {
       console.log("update");
       const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
