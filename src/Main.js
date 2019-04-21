@@ -47,7 +47,7 @@ module.exports = class Main {
       }
     });
 
-    Logger.init(this.data["level"],this.data["maxTrace"]);
+    Logger.init(this.data["level"],this.data["maxTrace"],false);
     console.log("Logger started");
     await dbChangeEnable(this.data["database"]);
 

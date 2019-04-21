@@ -10,9 +10,9 @@ Levels of logs:
 **/
 
 const fs = require("fs"),
-      util = require("util"),
-      { performance } = require("perf_hooks"),
-      {config} = require("./Configuration.js");
+util = require("util"),
+{ performance } = require("perf_hooks"),
+{config} = require("./Configuration.js");
 
 let LogObject = null;
 
@@ -76,10 +76,10 @@ module.exports = class Logger {
     return response+end;
   }
 
-  constructor(level,maxTrace) {
+  constructor(level,maxTrace,writing=true) {
     this.linePrinting=[];
     this.fileNames={};
-
+    this.writing=writing;
     this.level = level;
     this.maxTrace = maxTrace;
     this.outputFile = "./output/output-"+Date.now()+".txt";
@@ -119,15 +119,15 @@ module.exports = class Logger {
       l = parseFloat(args[args.length-1]);
       switch(l){
         case 0.5:
-          color="green";
-          break;
+        color="green";
+        break;
         default:
-          color="white";
-          break;
+        color="white";
+        break;
       }
     }
     const r = util.format.apply(null, args),
-          cute = this.parseOutput(r,l);
+    cute = this.parseOutput(r,l);
     this.sendConsole(l,cute,color);
   }
 
@@ -137,21 +137,23 @@ module.exports = class Logger {
 
   parseOutput(message,lvl){
     const date = new Date(),
-        Dd = (date.getDate()+"").padStart(2,"0"),
-        Mm = ((date.getMonth()+1)+"").padStart(2,"0"),
-        Yyyy = date.getFullYear(),
-        hh = (date.getHours()+"").padStart(2,"0"),
-        mm = (date.getMinutes()+"").padStart(2,"0"),
-        ss = (date.getSeconds()+"").padStart(2,"0"),
-        result = "("+lvl+") ["+Dd+"-"+Mm+"-"+Yyyy+" "+hh+":"+mm+":"+ss+"] "+message+" "+this.getFileAndLine()+"\n";
+    Dd = (date.getDate()+"").padStart(2,"0"),
+    Mm = ((date.getMonth()+1)+"").padStart(2,"0"),
+    Yyyy = date.getFullYear(),
+    hh = (date.getHours()+"").padStart(2,"0"),
+    mm = (date.getMinutes()+"").padStart(2,"0"),
+    ss = (date.getSeconds()+"").padStart(2,"0"),
+    result = "("+lvl+") ["+Dd+"-"+Mm+"-"+Yyyy+" "+hh+":"+mm+":"+ss+"] "+message+" "+this.getFileAndLine()+"\n";
 
     return result;
   }
 
   output(message){
-    if (!fs.existsSync("./output/")) {
-      fs.mkdirSync("./output/");
+    if(this.writing){
+      if (!fs.existsSync("./output/")) {
+        fs.mkdirSync("./output/");
+      }
+      fs.appendFileSync(this.outputFile, message);
     }
-    fs.appendFileSync(this.outputFile, message);
   }
 };
