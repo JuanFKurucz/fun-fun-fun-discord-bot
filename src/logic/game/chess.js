@@ -10,6 +10,7 @@ const width=690;
 const height=690;
 const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
+Canvas.registerFont('arial.ttf', { family: 'Arial' });
 
 class Chess {
   constructor(id_chess=null,state = null, movements = null) {
