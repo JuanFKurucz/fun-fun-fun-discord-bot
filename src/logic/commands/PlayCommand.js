@@ -24,15 +24,11 @@ module.exports = class PlayCommand extends Command {
           if(isNaN(againts)){
             const game = logic.games[user.id];
             if(command[1] == "ff"){
-              await logic.finishGame(
-                game,
-                game.players[game.players.indexOf(game.getPlayerById(user.id))+1%2].name
-              );
+              await logic.finishGame(game,game.players[game.players.indexOf(game.getPlayerById(user.id))+1%2].name);
               m.setDescription("game finished");
             } else {
               command.shift();
               const message = command.join("").toString().trim().toLowerCase();
-              console.info(message);
               const realCords=[];
               for(let m in message){
                 const ascii = message.charCodeAt(m);
@@ -53,7 +49,6 @@ module.exports = class PlayCommand extends Command {
                 } else {
                   cord2=realCords[3]+""+(9-parseInt(realCords[2]));
                 }
-                console.info(cord1+","+cord2);
                 const response = await game.makeMove(user.id,cord1,cord2);
                 m.text = response.text;
                 m.attachment = new Attachment(await game.draw(),"chess.png");
@@ -105,7 +100,6 @@ module.exports = class PlayCommand extends Command {
             m.text = "Hey <@!"+againts+">, <@!"+user.id+"> invited you to a chess game. Do you wanna play? Answer reacting to this message";
           } else {
             m.send = false;
-            //m.setDescription("You are not in a game and we couldn't start one with your message");
           }
         }
       }
