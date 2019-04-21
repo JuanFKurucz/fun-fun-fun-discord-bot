@@ -1,19 +1,13 @@
 "use strict";
 const path = require("path");
+const Drawing = require('./../Drawing');
 const Coordinate = require('./Coordinate');
 const Player = require('./player');
 const Board = require('./Board');
-const Data = require('./data.json');
-const base64ToImage = require('base64-to-image');
-const { createCanvas, loadImage, registerFont } = require('canvas');
-registerFont(__dirname+'/arial.ttf', { family: 'Arial' });
-const width=690;
-const height=690;
-const canvas = createCanvas(690, 690);
-const ctx = canvas.getContext('2d');
 
 class Chess {
   constructor(id_chess=null,state = null, movements = null) {
+    this.drawing = new Drawing();
     this.id = id_chess;
     this.playing=false;
     this.squareWidth = 80;
@@ -188,37 +182,21 @@ class Chess {
     const letters=["a","b","c","d","e","f","g","h"];
     const numbers=[8,7,6,5,4,3,2,1];
 
-    ctx.font = "18px Arial";
-    ctx.fillStyle = "black";
+    this.drawing.ctx.font = "18px Arial";
+    this.drawing.ctx.fillStyle = "black";
     for(let l in letters){
-      ctx.fillText(
-        letters[l],
-        parseInt(this.margins.left+this.squareWidth/2+this.squareWidth*l),
-        20
-      );
-      ctx.fillText(
-        letters[l],
-        parseInt(this.margins.left+this.squareWidth/2+this.squareWidth*l),
-        height-5
-      );
+      this.drawing.ctx.fillText(letters[l],parseInt(this.margins.left+this.squareWidth/2+this.squareWidth*l),20);
+      this.drawing.ctx.fillText(letters[l],parseInt(this.margins.left+this.squareWidth/2+this.squareWidth*l),this.drawing.height-5);
     }
     for(let n in numbers){
-      ctx.fillText(
-        numbers[n],
-        5,
-        parseInt(this.margins.top+this.squareHeight/2+this.squareHeight*n),
-      );
-      ctx.fillText(
-        numbers[n],
-        width-20,
-        parseInt(this.margins.top+this.squareHeight/2+this.squareHeight*n),
-      );
+      this.drawing.ctx.fillText(numbers[n],5,parseInt(this.margins.top+this.squareHeight/2+this.squareHeight*n));
+      this.drawing.ctx.fillText(numbers[n],this.drawing.width-20,parseInt(this.margins.top+this.squareHeight/2+this.squareHeight*n));
     }
   }
 
   drawBackGround(moves){
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, width, height);
+    this.drawing.ctx.fillStyle = "white";
+    this.drawing.ctx.fillRect(0, 0, this.drawing.width, this.drawing.height);
     let x=0;
     let y=0;
 
@@ -247,66 +225,60 @@ class Chess {
       }
 
       if(y%this.squareColors.length==0){
-        ctx.fillStyle = this.squareColors[i%this.squareColors.length];
+        this.drawing.ctx.fillStyle = this.squareColors[i%this.squareColors.length];
       } else {
-        ctx.fillStyle = this.squareColors[((1+i)%this.squareColors.length)];
+        this.drawing.ctx.fillStyle = this.squareColors[((1+i)%this.squareColors.length)];
       }
 
-      ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
+      this.drawing.ctx.fillRect(this.margins.left+(x*this.squareWidth), this.margins.top+y*this.squareHeight, this.squareWidth, this.squareHeight);
 
       if(border !== ""){
-        ctx.fillStyle = border;
-        ctx.beginPath();
-        ctx.arc(
-          (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
-          (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
-          parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-
-        if(realMoves.indexOf(Coordinate.all[i]) !== -1){
-          ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
-          ctx.beginPath();
-          ctx.arc(
-            (this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),
-            (this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),
-            parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
-            ctx.fill();
-          }
-        }
+        this.drawing.ctx.fillStyle = border;
+        this.drawing.ctx.beginPath();
+        this.drawing.ctx.arc((this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),(this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
+        this.drawing.ctx.fill();
       }
 
-      async getImage(path){
-        return await (new Promise(function(resolve,reject){
-          loadImage(path).then((image) => {
-            resolve(image);
-          });
-        }));
+      if(realMoves.indexOf(Coordinate.all[i]) !== -1){
+        this.drawing.ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+        this.drawing.ctx.beginPath();
+        this.drawing.ctx.arc((this.margins.left+(x*this.squareWidth))+parseInt(this.squareWidth/2),(this.margins.top+y*this.squareHeight)+parseInt(this.squareHeight/2),parseInt(this.squareWidth/2)-5, 0, 2 * Math.PI);
+        this.drawing.ctx.fill();
       }
+    }
+  }
 
-      async drawGame(){
-        let x=0;
-        let y=0;
-        for(let i in this.board.state){
-          if(this.board.state[i]){
-            x=i%8;
-            y=parseInt(i/8);
-            const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
-            ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
-          }
-        }
+  async getImage(path){
+    return await (new Promise(function(resolve,reject){
+      Drawing.loadImage(path).then((image) => {
+        resolve(image);
+      });
+    }));
+  }
+
+  async drawGame(){
+    let x=0;
+    let y=0;
+    for(let i in this.board.state){
+      if(this.board.state[i]){
+        x=i%8;
+        y=parseInt(i/8);
+        const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
+        this.drawing.ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
+    }
+  }
 
-      save(){
-        return canvas.toBuffer();
-      }
+  save(){
+    return this.drawing.canvas.toBuffer();
+  }
 
-      async draw(moves=null){
-        this.drawBackGround(moves);
-        this.drawCoordinates();
-        await this.drawGame(this.state);
-        return this.save();
-      }
-    };
+  async draw(moves=null){
+    this.drawBackGround(moves);
+    this.drawCoordinates();
+    await this.drawGame(this.state);
+    return this.save();
+  }
+};
 
-    module.exports = Chess;
+module.exports = Chess;

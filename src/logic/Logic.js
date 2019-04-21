@@ -12,7 +12,7 @@ const Server = require(__dirname+"/Server.js");
 const { dbQuery } = require("../DataBase.js");
 const CommandConstructor = require(__dirname+"/constructors/CommandConstructor.js");
 const Language = require("../Language.js");
-const Chess = require("./game/chess.js");
+const Chess = require("./games/chess/");
 
 module.exports = class Logic {
   constructor(prefix) {
@@ -90,13 +90,15 @@ module.exports = class Logic {
     }
   }
 
-  async startGame(id1,id2){;
+  async startGame(id1,id2){
     if(id2.length && id1.length && !this.games.hasOwnProperty(id1) && !this.games.hasOwnProperty(id2)){
       const game = new Chess();
       this.games[id1] = game;
       this.games[id2] = game;
       const response = await game.start(id1,id2);
+      console.log("game started");
       await this.saveGame(game);
+      console.log("game saved");
       return response;
     } else {
       return null;
