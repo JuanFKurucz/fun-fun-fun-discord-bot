@@ -5,12 +5,12 @@ const Player = require('./player');
 const Board = require('./Board');
 const Data = require('./data.json');
 const base64ToImage = require('base64-to-image');
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
+registerFont('arial.ttf', { family: 'Arial' });
 const width=690;
 const height=690;
 const canvas = createCanvas(690, 690);
 const ctx = canvas.getContext('2d');
-Canvas.registerFont('arial.ttf', { family: 'Arial' });
 
 class Chess {
   constructor(id_chess=null,state = null, movements = null) {
