@@ -1,7 +1,7 @@
 "use strict";
 const Drawing = require('./../Drawing');
 const Coordinate = require('./Coordinate');
-const Player = require('./player');
+const Player = require('./Player');
 const Board = require('./Board');
 
 class Chess {
