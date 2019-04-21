@@ -51,7 +51,7 @@ module.exports = class PlayCommand extends Command {
                 }
                 const response = await game.makeMove(user.id,cord1,cord2);
                 m.text = response.text;
-                m.attachment = new Attachment(await game.draw(),"chess.png");
+                m.attachment = new Attachment(game.draw(),"chess.png");
                 if(response.status === false){
                   await logic.finishGame(game,response.winner);
                 } else {
@@ -87,7 +87,7 @@ module.exports = class PlayCommand extends Command {
                   newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
                   if(newMessage.text !== null){
                     const game = logic.games[user.id];
-                    newMessage.attachment = new Attachment(await game.draw(),"chess.png");
+                    newMessage.attachment = new Attachment(game.draw(),"chess.png");
                     await m.sentMessage.channel.send(newMessage.text,newMessage.attachment);
                   } else {
                     await m.sentMessage.edit("Unexpected error");

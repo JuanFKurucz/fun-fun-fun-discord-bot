@@ -1,5 +1,4 @@
 "use strict";
-const path = require("path");
 const Drawing = require('./../Drawing');
 const Coordinate = require('./Coordinate');
 const Player = require('./player');
@@ -248,22 +247,14 @@ class Chess {
     }
   }
 
-  async getImage(path){
-    return await (new Promise(function(resolve,reject){
-      Drawing.loadImage(path).then((image) => {
-        resolve(image);
-      });
-    }));
-  }
-
-  async drawGame(){
+  drawGame(){
     let x=0;
     let y=0;
     for(let i in this.board.state){
       if(this.board.state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const image = await this.getImage(path.join(__dirname,"/images/",this.board.state[i]+".png"));
+        const image = Chess.images[this.board.state[i]+".png"];
         this.drawing.ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
     }
@@ -273,12 +264,20 @@ class Chess {
     return this.drawing.canvas.toBuffer();
   }
 
-  async draw(moves=null){
+  draw(moves=null){
     this.drawBackGround(moves);
     this.drawCoordinates();
-    await this.drawGame(this.state);
+    this.drawGame(this.state);
     return this.save();
   }
 };
+
+Chess.images = {};
+
+Chess.preload = async() => {
+  Chess.images = await Drawing.loadImages(__dirname+"/images/");
+};
+
+Chess.preload();
 
 module.exports = Chess;
