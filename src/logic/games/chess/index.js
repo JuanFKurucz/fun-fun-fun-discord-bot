@@ -72,7 +72,7 @@ class Chess {
 
   possibleMoves(player,coordinate){
     let message = "";
-    let bufferImage;
+    let bufferImage = null;
     const currentPlayer = this.getPlayerById(player);
     if(currentPlayer !== null){
       if(coordinate.length==2){
@@ -83,9 +83,9 @@ class Chess {
           if(moves.length===0){
             message=currentPlayer.mention()+", the piece can't be moved";
           } else {
-            bufferImage = this.draw(moves);
             message=currentPlayer.mention()+", moves are marked with a green circle";
           }
+          bufferImage = this.draw(moves);
         } else {
           message=currentPlayer.mention()+" that's an empty field";
         }
@@ -94,6 +94,9 @@ class Chess {
       }
     } else {
       message="Unexpected error";
+    }
+    if(bufferImage == null){
+      bufferImage = this.draw();
     }
     return {buffer:bufferImage,text:message,status:this.playing};
   }

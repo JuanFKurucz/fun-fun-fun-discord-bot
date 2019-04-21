@@ -5,7 +5,7 @@ const Command = require("../Command.js");
 const Message = require("../../Message.js");
 const Attachment = require("discord.js").Attachment;
 
-module.exports = class PlayCommand extends Command {
+module.exports = class ChessCommand extends Command {
   constructor(id,name) {
     super(id,name);
   }

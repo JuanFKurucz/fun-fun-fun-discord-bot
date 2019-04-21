@@ -14,7 +14,7 @@ class Drawing {
   }
 
   save(){
-    return this.drawing.canvas.toBuffer();
+    return this.canvas.toBuffer();
   }
 }
 
