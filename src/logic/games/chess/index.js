@@ -5,9 +5,9 @@ const Player = require('./player');
 const Board = require('./Board');
 
 class Chess {
-  constructor(id_chess=null,state = null, movements = null) {
+  constructor(id=null,state = null, movements = null) {
     this.drawing = new Drawing();
-    this.id = id_chess;
+    this.id = id;
     this.playing=false;
     this.squareWidth = 80;
     this.squareHeight = 80;
@@ -70,7 +70,7 @@ class Chess {
     return null;
   }
 
-  async possibleMoves(player,coordinate){
+  possibleMoves(player,coordinate){
     let message = "";
     let bufferImage;
     const currentPlayer = this.getPlayerById(player);
@@ -83,7 +83,7 @@ class Chess {
           if(moves.length===0){
             message=currentPlayer.mention()+", the piece can't be moved";
           } else {
-            bufferImage = await this.draw(moves);
+            bufferImage = this.draw(moves);
             message=currentPlayer.mention()+", moves are marked with a green circle";
           }
         } else {
@@ -98,7 +98,7 @@ class Chess {
     return {buffer:bufferImage,text:message,status:this.playing};
   }
 
-  async makeMove(player,coordinate,new_coordinate){
+  makeMove(player,coordinate,new_coordinate){
     let message = "";
     const currentPlayer = this.getPlayerById(player);
     if(currentPlayer !== null){
@@ -160,7 +160,7 @@ class Chess {
     }
   }
 
-  async start(id1,id2){
+  start(id1,id2){
 
     const player1 = new Player(id1);
     const player2 = new Player(id2);
@@ -173,7 +173,7 @@ class Chess {
     this.currentTurn=firstPlayer;
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
 
-    await this.draw();
+    this.draw();
     return "It's the turn of "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
   }
 
@@ -260,15 +260,11 @@ class Chess {
     }
   }
 
-  save(){
-    return this.drawing.canvas.toBuffer();
-  }
-
   draw(moves=null){
     this.drawBackGround(moves);
     this.drawCoordinates();
     this.drawGame(this.state);
-    return this.save();
+    return this.drawing.save();
   }
 };
 

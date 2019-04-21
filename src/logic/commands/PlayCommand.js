@@ -49,7 +49,7 @@ module.exports = class PlayCommand extends Command {
                 } else {
                   cord2=realCords[3]+""+(9-parseInt(realCords[2]));
                 }
-                const response = await game.makeMove(user.id,cord1,cord2);
+                const response = game.makeMove(user.id,cord1,cord2);
                 m.text = response.text;
                 m.attachment = new Attachment(game.draw(),"chess.png");
                 if(response.status === false){
@@ -58,7 +58,7 @@ module.exports = class PlayCommand extends Command {
                   await logic.saveGame(game);
                 }
               } else if(message.length == 2){
-                const response = await game.possibleMoves(user.id,cord1);
+                const response = game.possibleMoves(user.id,cord1);
                 m.text = response.text;
                 m.attachment = new Attachment(response.buffer,"chess.png");
                 await logic.saveGame(game);
@@ -84,7 +84,7 @@ module.exports = class PlayCommand extends Command {
                 const reaction = collected.first();
                 if (reaction.emoji.name === m.reactions[0]) {
                   const newMessage = new Message(m.server,m.channel,m.owner);
-                  newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
+                  newMessage.text = logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
                   if(newMessage.text !== null){
                     const game = logic.games[user.id];
                     newMessage.attachment = new Attachment(game.draw(),"chess.png");

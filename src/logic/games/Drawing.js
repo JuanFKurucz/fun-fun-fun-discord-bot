@@ -12,6 +12,10 @@ class Drawing {
     this.canvas = createCanvas(this.width, this.height);
     this.ctx = this.canvas.getContext('2d');
   }
+
+  save(){
+    return this.drawing.canvas.toBuffer();
+  }
 }
 
 const rreaddir = async (dir) => {
