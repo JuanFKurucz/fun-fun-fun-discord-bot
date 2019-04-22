@@ -95,7 +95,7 @@ module.exports = class Logic {
       const game = new Chess();
       this.games[id1] = game;
       this.games[id2] = game;
-      const response = await game.start(id1,id2);
+      const response = game.start(id1,id2);
       console.log("game started");
       await this.saveGame(game);
       console.log("game saved");

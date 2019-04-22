@@ -84,7 +84,7 @@ module.exports = class ChessCommand extends Command {
                 const reaction = collected.first();
                 if (reaction.emoji.name === m.reactions[0]) {
                   const newMessage = new Message(m.server,m.channel,m.owner);
-                  newMessage.text = logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
+                  newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
                   if(newMessage.text !== null){
                     const game = logic.games[user.id];
                     newMessage.attachment = new Attachment(game.draw(),"chess.png");
