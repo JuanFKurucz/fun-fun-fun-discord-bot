@@ -23,37 +23,6 @@ class PieceConstructor {
   }
 };
 
-PieceConstructor.directions = {
-  "k":{
-    "diagonal":1,
-    "up":1,
-    "down":1,
-    "left":1,
-    "right":1
-  },
-  "q":{
-    "diagonal":0,
-    "up":0,
-    "down":0,
-    "left":0,
-    "right":0
-  },
-  "n":{
-    "jump":0,
-  },
-  "b":{
-    "diagonal":0,
-  },
-  "r":{
-    "up":0,
-    "down":0,
-    "left":0,
-    "right":0
-  },
-  "p":{
-    "up":1
-  }
-}
 PieceConstructor.all = {
   "bk":"blackKing",
   "bq":"blackQueen",
@@ -84,8 +53,7 @@ PieceConstructor.create = function(type,team,coordinate){
     const constr = PieceConstructor.constructors[type];
     return new constr(
       team,
-      coordinate,
-      PieceConstructor.directions[type.toLowerCase()]
+      coordinate
     );
   } else {
     return null;
