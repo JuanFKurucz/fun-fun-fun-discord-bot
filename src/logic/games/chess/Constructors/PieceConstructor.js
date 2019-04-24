@@ -8,6 +8,19 @@ const Queen = require("../Pieces/Queen.js");
 const Rook = require("../Pieces/Rook.js");
 
 class PieceConstructor {
+  constructor(){
+    this.pieces = {};
+  }
+
+  async addPiece(constructor, image){
+    const tempObject = new constructor(null,null);
+    const pieceName = tempObject.constructor.name;
+    if(!this.pieces.hasOwnProperty(pieceName)){
+  //    const loadedImage = await 
+      this.pieces[pieceName] = constructor;
+      constructor.setImage();
+    }
+  }
 };
 
 PieceConstructor.directions = {

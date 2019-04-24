@@ -24,7 +24,7 @@ module.exports = class ChessCommand extends Command {
           if(isNaN(againts)){
             const game = logic.games[user.id];
             if(command[1] == "ff"){
-              await logic.finishGame(game,game.players[game.players.indexOf(game.getPlayerById(user.id))+1%2].name);
+              await logic.finishGame(game,game.players[(game.players.indexOf(game.getPlayerById(user.id))+1)%2].name);
               m.setDescription("game finished");
             } else {
               command.shift();

@@ -18,6 +18,14 @@ class Drawing {
   }
 }
 
+const loadOneImage = async (path) => {
+  return await (new Promise(function(resolve,reject){
+    loadImage(path).then((image) => {
+      resolve(image);
+    });
+  }));;
+};
+
 const rreaddir = async (dir) => {
   const images = {};
   const allFiles = [];
@@ -28,14 +36,11 @@ const rreaddir = async (dir) => {
   )));
 
   for(let f in allFiles){
-    images[path.basename(allFiles[f])] = await (new Promise(function(resolve,reject){
-      loadImage(allFiles[f]).then((image) => {
-        resolve(image);
-      });
-    }));
+    images[path.basename(allFiles[f])] = await Drawing.loadImage(allFiles[f]);
   }
   return images;
 };
 
+Drawing.loadImage = loadOneImage;
 Drawing.loadImages = rreaddir;
 module.exports = Drawing;
