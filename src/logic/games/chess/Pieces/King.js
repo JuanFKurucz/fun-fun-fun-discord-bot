@@ -1,18 +1,19 @@
 "use strict";
 
+const Drawing = require("../../Drawing");
 const Piece = require("../Piece");
 
 class King extends Piece {
   constructor(team,coordinate) {
     super(team,coordinate);
-    this.type="k";
+    this.type=King.type;
   }
 
   normalMove(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
     return ((newField!== null && newField.team != this.team) || newField === null) &&
-           Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)<=1 &&
-           Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)<=1;
+    Math.abs(this.coordinate.cordLetter-newCoordinate.cordLetter)<=1 &&
+    Math.abs(this.coordinate.cordNumber-newCoordinate.cordNumber)<=1;
   }
 
   move(board,newCoordinate){
@@ -50,13 +51,22 @@ class King extends Piece {
       }
     } else {
       return this.normalMove(board,newCoordinate);
-   }
+    }
   }
-  getImage(){
-    return King.images[this.team];
+  getImage(type="normal"){
+    return King.images[type][this.team];
   }
 }
 
-King.images = {};
+King.type="k";
+const loadImages = async () => {
+  King.images = {
+    "normal":{
+      "b":await Drawing.loadImage(__dirname+"/../images/bk.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/wk.png"),
+    }
+  };
+}
+loadImages();
 
 module.exports = King;

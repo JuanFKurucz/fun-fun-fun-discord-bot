@@ -67,7 +67,6 @@ module.exports = class Bot {
   }
 
   async start(token){
-    await this.logic.load();
     this.client.on("ready", async () => {
       console.log(`Logged in as ${this.client.user.tag}!`,1);
       await this.logic.loadServers(await this.client.guilds.array());

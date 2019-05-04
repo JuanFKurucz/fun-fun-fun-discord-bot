@@ -6,7 +6,7 @@ const Piece = require("../Piece");
 class Bishop extends Piece {
   constructor(team,coordinate) {
     super(team,coordinate);
-    this.type="b";
+    this.type=Bishop.type;
   }
 
   move(board,newCoordinate){
@@ -28,11 +28,21 @@ class Bishop extends Piece {
     }
   }
 
-  getImage(){
-    return Bishop.images[this.team];
+  getImage(type="normal"){
+    return Bishop.images[type][this.team];
   }
 }
 
-Bishop.images = {};
+Bishop.type="b";
+const loadImages = async () => {
+  Bishop.images = {
+    "normal":{
+      "b":await Drawing.loadImage(__dirname+"/../images/bb.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/wb.png"),
+    }
+  };
+}
+loadImages();
+
 
 module.exports = Bishop;

@@ -1,18 +1,19 @@
 "use strict";
 
+const Drawing = require("../../Drawing");
 const Piece = require("../Piece");
 
 class Pawn extends Piece {
   constructor(team,coordinate) {
     super(team,coordinate);
-    this.type="p";
+    this.type=Pawn.type;
   }
 
   move(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
     let move = false;
     if( Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 0 &&
-        newField === null){
+    newField === null){
       var row = (this.team === "w") ? 6 : 1;
       var moveOk = (this.team === "b") ? newCoordinate.cordNumber>this.coordinate.cordNumber : this.coordinate.cordNumber>newCoordinate.cordNumber;
       if(moveOk){
@@ -24,7 +25,7 @@ class Pawn extends Piece {
       }
     } else if(newField != null && newField.team != "" && newField.team != this.team && Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter) === 1){
       if( (this.team === "w" && this.coordinate.cordNumber-newCoordinate.cordNumber === 1) ||
-          (this.team === "b" && newCoordinate.cordNumber-this.coordinate.cordNumber === 1)){
+      (this.team === "b" && newCoordinate.cordNumber-this.coordinate.cordNumber === 1)){
         move = true
       }
     }
@@ -38,18 +39,27 @@ class Pawn extends Piece {
 
   update(newCoordinate){
     if(
-        (this.team === "w" && newCoordinate.cordNumber === 0) ||
-        (this.team === "b" && newCoordinate.cordNumber === 7)
-      ){
+      (this.team === "w" && newCoordinate.cordNumber === 0) ||
+      (this.team === "b" && newCoordinate.cordNumber === 7)
+    ){
       this.type="q";
     }
   }
-  
-  getImage(){
-    return Pawn.images[this.team];
+
+  getImage(type="normal"){
+    return Pawn.images[type][this.team];
   }
 }
 
-Pawn.images = {};
+Pawn.type="p";
+const loadImages = async () => {
+  Pawn.images = {
+    "normal":{
+      "b":await Drawing.loadImage(__dirname+"/../images/bp.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/wp.png"),
+    }
+  };
+}
+loadImages();
 
 module.exports = Pawn;

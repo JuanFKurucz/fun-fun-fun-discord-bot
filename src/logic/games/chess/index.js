@@ -22,6 +22,7 @@ class Chess {
       this.board=new Board(this,state,movements);
     }
     this.currentTurn=0;
+    this.lastResponse="";
   }
 
   getPlayer(team){
@@ -42,10 +43,8 @@ class Chess {
       let newState = this.board.cloneState();
       newState=this.board.move(piece,to,newState);
       if(this.board.kingInCheck(this.players[this.currentTurn].team,newState)){
-        console.log("King in check");
         return false;
       } else {
-        console.log("King alright");
         return true;
       }
     } else {
@@ -98,6 +97,7 @@ class Chess {
     if(bufferImage == null){
       bufferImage = this.draw();
     }
+    this.lastResponse=message;
     return {buffer:bufferImage,text:message,status:this.playing};
   }
 
@@ -144,7 +144,12 @@ class Chess {
     } else {
       message="Unexpected error";
     }
-    return {text:message,status:this.playing};
+    this.lastResponse=message;
+    return {
+      text:message,
+      buffer:this.draw(),
+      status:this.playing
+    };
   }
 
   load(white,black,turn){
@@ -176,8 +181,12 @@ class Chess {
     this.currentTurn=firstPlayer;
     this.players[(firstPlayer+1)%this.players.length].assignColor("b");
 
-    this.draw();
-    return "It's the turn of "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+    const response = "It's the turn of "+this.getCurrentPlayer().mention()+" you are "+this.getCurrentPlayer().printTeam();
+    return {
+      text:response,
+      buffer:this.draw(),
+      status:this.playing
+    };
   }
 
   drawCoordinates(){
@@ -257,7 +266,7 @@ class Chess {
       if(this.board.state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const piece = this.board.getPiece(Coordinate.fromNumberToText(x,y));
+        const piece = this.board.getPiece(new Coordinate(Coordinate.fromNumberToText(x,y)));
         this.drawing.ctx.drawImage(piece.getImage(), this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
     }

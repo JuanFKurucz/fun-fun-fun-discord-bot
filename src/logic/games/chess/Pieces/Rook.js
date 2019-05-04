@@ -1,11 +1,12 @@
 "use strict";
 
+const Drawing = require("../../Drawing");
 const Piece = require("../Piece");
 
 class Rook extends Piece {
   constructor(team,coordinate) {
     super(team,coordinate);
-    this.type="r";
+    this.type=Rook.type;
   }
 
   move(board,newCoordinate){
@@ -37,11 +38,21 @@ class Rook extends Piece {
     }
   }
 
-  getImage(){
-    return Rook.images[this.team];
+  getImage(type="normal"){
+    return Rook.images[type][this.team];
   }
 }
 
-Rook.images = {};
+Rook.type="r";
+
+const loadImages = async () => {
+  Rook.images = {
+    "normal":{
+      "b":await Drawing.loadImage(__dirname+"/../images/br.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/wr.png"),
+    }
+  };
+}
+loadImages();
 
 module.exports = Rook;

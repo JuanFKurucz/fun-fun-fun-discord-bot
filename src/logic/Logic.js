@@ -18,7 +18,6 @@ module.exports = class Logic {
   constructor(prefix) {
     this.servers = {};
     this.users = {};
-    this.games = {};
     this.commandConstructor = new CommandConstructor(prefix);
     this.commands = this.commandConstructor.initCommands();
     this.lanCommands = Language.getCommands();
@@ -50,7 +49,6 @@ module.exports = class Logic {
       playing=0;
     }
     if(game.id === null){
-      console.log("insert");
       const result = await dbQuery("INSERT INTO chess SET ?",{
         "active":playing,
         "state":JSON.stringify(game.board.state),
@@ -63,13 +61,8 @@ module.exports = class Logic {
       });
       if(result){
         game.id=result.insertId;
-      } else {
-        for(let p in game.players){
-          delete this.games[game.players[p].name];
-        }
       }
     } else {
-      console.log("update");
       const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
         "active":playing,
         "state":JSON.stringify(game.board.state),
@@ -82,39 +75,29 @@ module.exports = class Logic {
   }
 
   async finishGame(game,winner){
-    console.log(winner);
     game.playing=false;
     await this.saveGame(game,winner);
-    for(let p in game.players){
-      delete this.games[game.players[p].name];
-    }
   }
 
   async startGame(id1,id2){
-    if(id2.length && id1.length && !this.games.hasOwnProperty(id1) && !this.games.hasOwnProperty(id2)){
+    if(id2.length && id1.length){
       const game = new Chess();
-      this.games[id1] = game;
-      this.games[id2] = game;
       const response = game.start(id1,id2);
-      console.log("game started");
       await this.saveGame(game);
-      console.log("game saved");
       return response;
     } else {
       return null;
     }
   }
 
-  async load(){
-    const db_games = await dbQuery("SELECT * FROM chess WHERE active = 1");
+  async loadGame(id_user){
+    const db_games = await dbQuery("SELECT * FROM chess WHERE (white = '"+id_user+"' || black = '"+id_user+"') &&  active = 1");
     if(db_games !== null && db_games.length){
-      for(let g in db_games){
-        const game = new Chess(db_games[g].id_chess,JSON.parse(db_games[g].state),JSON.parse(db_games[g].movements));
-        game.load(db_games[g].white,db_games[g].black,db_games[g].turn);
-        this.games[db_games[g].black] = game;
-        this.games[db_games[g].white] = game;
-      }
+      const game = new Chess(db_games[0].id_chess,JSON.parse(db_games[0].state),JSON.parse(db_games[0].movements));
+      game.load(db_games[0].white,db_games[0].black,db_games[0].turn);
+      return game;
     }
+    return null;
   }
 
   async loadServers(guilds){

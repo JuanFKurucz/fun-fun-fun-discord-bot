@@ -20,9 +20,9 @@ module.exports = class ChessCommand extends Command {
       if(command[1][0]==bot.prefix){
         m.send = false;
       } else {
-        if(logic.games.hasOwnProperty(user.id)){
+        let game = await logic.loadGame(user.id);
+        if(game!==null){
           if(isNaN(againts)){
-            const game = logic.games[user.id];
             if(command[1] == "ff"){
               await logic.finishGame(game,game.players[(game.players.indexOf(game.getPlayerById(user.id))+1)%2].name);
               m.setDescription("game finished");
@@ -84,10 +84,10 @@ module.exports = class ChessCommand extends Command {
                 const reaction = collected.first();
                 if (reaction.emoji.name === m.reactions[0]) {
                   const newMessage = new Message(m.server,m.channel,m.owner);
-                  newMessage.text = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
-                  if(newMessage.text !== null){
-                    const game = logic.games[user.id];
-                    newMessage.attachment = new Attachment(game.draw(),"chess.png");
+                  const response = await logic.startGame(m.savedStuff["users"][0],m.savedStuff["users"][1]);
+                  if(response !== null){
+                    newMessage.text = response.text;
+                    newMessage.attachment = new Attachment(response.buffer,"chess.png");
                     await m.sentMessage.channel.send(newMessage.text,newMessage.attachment);
                   } else {
                     await m.sentMessage.edit("Unexpected error");

@@ -30,6 +30,6 @@ Coordinate.all = [
 ];
 
 Coordinate.fromNumberToText = function(cordLetter,cordNumber){
-  return String.fromCharCode(97+parseInt(cordLetter))+""+cordNumber;
+  return String.fromCharCode(97+parseInt(cordLetter))+""+(cordNumber+1);
 }
 module.exports = Coordinate;
