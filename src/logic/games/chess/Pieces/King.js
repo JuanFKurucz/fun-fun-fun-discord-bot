@@ -52,6 +52,11 @@ class King extends Piece {
       return this.normalMove(board,newCoordinate);
    }
   }
+  getImage(){
+    return King.images[this.team];
+  }
 }
+
+King.images = {};
 
 module.exports = King;

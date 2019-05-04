@@ -41,6 +41,12 @@ class Queen extends Piece {
       return false;
     }
   }
+
+  getImage(){
+    return Queen.images[this.team];
+  }
 }
+
+Queen.images = {};
 
 module.exports = Queen;

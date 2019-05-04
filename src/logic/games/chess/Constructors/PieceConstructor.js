@@ -16,7 +16,7 @@ class PieceConstructor {
     const tempObject = new constructor(null,null);
     const pieceName = tempObject.constructor.name;
     if(!this.pieces.hasOwnProperty(pieceName)){
-  //    const loadedImage = await 
+  //    const loadedImage = await
       this.pieces[pieceName] = constructor;
       constructor.setImage();
     }

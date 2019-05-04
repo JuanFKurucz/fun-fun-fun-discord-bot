@@ -36,5 +36,12 @@ class Rook extends Piece {
       return false;
     }
   }
+
+  getImage(){
+    return Rook.images[this.team];
+  }
 }
+
+Rook.images = {};
+
 module.exports = Rook;

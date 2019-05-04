@@ -16,5 +16,9 @@ class Piece {
     //override
   }
 
+  getImage(){
+    //override
+  }
+
 };
 module.exports = Piece;

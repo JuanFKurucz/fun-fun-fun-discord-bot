@@ -44,6 +44,12 @@ class Pawn extends Piece {
       this.type="q";
     }
   }
+  
+  getImage(){
+    return Pawn.images[this.team];
+  }
 }
+
+Pawn.images = {};
 
 module.exports = Pawn;

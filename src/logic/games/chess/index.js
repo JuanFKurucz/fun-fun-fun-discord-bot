@@ -257,8 +257,8 @@ class Chess {
       if(this.board.state[i]){
         x=i%8;
         y=parseInt(i/8);
-        const image = Chess.images[this.board.state[i]+".png"];
-        this.drawing.ctx.drawImage(image, this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
+        const piece = this.board.getPiece(Coordinate.fromNumberToText(x,y));
+        this.drawing.ctx.drawImage(piece.getImage(), this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
     }
   }

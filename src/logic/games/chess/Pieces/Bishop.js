@@ -1,5 +1,6 @@
 "use strict";
 
+const Drawing = require("../../Drawing");
 const Piece = require("../Piece");
 
 class Bishop extends Piece {
@@ -26,5 +27,12 @@ class Bishop extends Piece {
       return false;
     }
   }
+
+  getImage(){
+    return Bishop.images[this.team];
+  }
 }
+
+Bishop.images = {};
+
 module.exports = Bishop;

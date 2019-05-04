@@ -21,5 +21,11 @@ class Knight extends Piece {
             )
           );
   }
+
+  getImage(){
+    return Knight.images[this.team];
+  }
 }
+
+Knight.images = {};
 module.exports = Knight;
