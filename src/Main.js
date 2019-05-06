@@ -8,9 +8,11 @@
   Here we just call for Bot and DataBase classes and start them.
 **/
 
-const Bot = require(__dirname+"/Bot.js"),
-      Logger = require(__dirname+"/Logger.js"),
-      { dbChangeEnable } = require(__dirname+"/DataBase.js");
+const Bot = require(__dirname+"/Bot.js");
+const Logger = require(__dirname+"/Logger.js");
+const mysql = require("mysql");
+const {config} = require("./Configuration.js");
+const util = require('util');
 
 
 module.exports = class Main {
@@ -49,8 +51,17 @@ module.exports = class Main {
 
     Logger.init(this.data["level"],this.data["maxTrace"],false);
     console.log("Logger started");
-    await dbChangeEnable(this.data["database"]);
 
+    const opciones = config("database","options");
+    global.db = await mysql.createConnection({
+      host:opciones.host,
+      user:opciones.user,
+      password:opciones.password,
+      database:opciones.database
+    });
+
+    db.connect();
+    global.query = util.promisify(db.query).bind(db);
     console.log("Configuration of Logger at level "+Logger.get().getLevel(),1);
   }
 

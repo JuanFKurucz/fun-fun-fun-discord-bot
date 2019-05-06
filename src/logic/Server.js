@@ -1,5 +1,4 @@
 "use strict";
-const { dbQuery } = require("../DataBase.js");
 
 const possibleChannelTypes = {
   "chess":true
@@ -37,15 +36,15 @@ class Server {
     const json = {};
     json.channels = this.channels;
     json.language = this.language;
-    const exists = await dbQuery("SELECT config FROM server WHERE ?",{
+    const exists = await query("SELECT config FROM server WHERE ?",{
       "id_server":this.id
     });
     if(exists !== null && exists.length){
-      await dbQuery("UPDATE server SET ? WHERE id_server = '"+this.id+"'",{
+      await query("UPDATE server SET ? WHERE id_server = '"+this.id+"'",{
         "config":JSON.stringify(json)
       });
     } else {
-      await dbQuery("INSERT INTO server SET ?",{
+      await query("INSERT IGNORE INTO server SET ?",{
         "id_server":this.id,
         "config":JSON.stringify(json)
       });
@@ -53,7 +52,7 @@ class Server {
   }
 
   async load(){
-    const data = await dbQuery("SELECT config FROM server WHERE ?",{
+    const data = await query("SELECT config FROM server WHERE ?",{
       "id_server":this.id
     });
     if(data !== null && data.length){
@@ -72,7 +71,7 @@ class Server {
 
 
 Server.get = async function(id){
-  const exists = await dbQuery("SELECT config FROM server WHERE ?",{
+  const exists = await query("SELECT config FROM server WHERE ?",{
     "id_server":id
   });
   const s = new Server(id);

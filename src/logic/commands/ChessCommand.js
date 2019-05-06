@@ -20,9 +20,7 @@ module.exports = class ChessCommand extends Command {
       if(command[1][0]==bot.prefix){
         m.send = false;
       } else {
-        console.info("hello");
         let game = await logic.loadGame(user.id);
-        console.info(game);
         if(game!==null){
           if(isNaN(againts)){
             if(command[1] == "ff"){

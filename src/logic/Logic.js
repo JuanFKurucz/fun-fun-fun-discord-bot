@@ -9,7 +9,6 @@ and handles the message with commandHandler.
 
 const User = require(__dirname+"/User.js");
 const Server = require(__dirname+"/Server.js");
-const { dbQuery } = require("../DataBase.js");
 const CommandConstructor = require(__dirname+"/constructors/CommandConstructor.js");
 const Language = require("../Language.js");
 const Chess = require("./games/chess/");
@@ -49,7 +48,7 @@ module.exports = class Logic {
       playing=0;
     }
     if(game.id === null){
-      const result = await dbQuery("INSERT INTO chess SET ?",{
+      const result = await query("INSERT INTO chess SET ?",{
         "active":playing,
         "state":JSON.stringify(game.board.state),
         "movements":JSON.stringify(game.board.movements),
@@ -63,7 +62,7 @@ module.exports = class Logic {
         game.id=result.insertId;
       }
     } else {
-      const result = await dbQuery("UPDATE chess SET ? WHERE id_chess = "+game.id,{
+      const result = await query("UPDATE chess SET ? WHERE id_chess = "+game.id,{
         "active":playing,
         "state":JSON.stringify(game.board.state),
         "movements":JSON.stringify(game.board.movements),
@@ -91,7 +90,7 @@ module.exports = class Logic {
   }
 
   async loadGame(id_user){
-    const db_games = await dbQuery("SELECT * FROM chess WHERE (white = '"+id_user+"' || black = '"+id_user+"') &&  active = 1");
+    const db_games = await query("SELECT * FROM chess WHERE (white = '"+id_user+"' || black = '"+id_user+"') && active = 1");
     if(db_games !== null && db_games.length){
       const game = new Chess(db_games[0].id_chess,JSON.parse(db_games[0].state),JSON.parse(db_games[0].movements));
       game.load(db_games[0].white,db_games[0].black,db_games[0].turn);
@@ -129,7 +128,7 @@ module.exports = class Logic {
   async getUser(info){
     if(this.users.hasOwnProperty(info.id) === false){
       this.users[info.id] = new User(info.id);
-      await dbQuery("INSERT INTO user SET ?",{
+      await query("INSERT IGNORE INTO user SET ?",{
         "id_user":info.id
       });
     }
