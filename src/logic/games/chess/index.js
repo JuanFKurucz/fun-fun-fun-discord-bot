@@ -267,7 +267,13 @@ class Chess {
         x=i%8;
         y=parseInt(i/8);
         const piece = this.board.getPiece(new Coordinate(Coordinate.fromNumberToText(x,y)));
-        this.drawing.ctx.drawImage(piece.getImage(), this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
+        if(piece.team=="w"){
+          this.drawing.ctx.filter = '';
+        } else {
+          this.drawing.ctx.filter = 'sepia(1)';
+        }
+        this.drawing.filter = 'contrast(1.4) sepia(1) drop-shadow(9px 9px 2px #e81)';
+        this.drawing.ctx.drawImage(piece.getImage("mod"), this.margins.left+(x*this.squareWidth), this.margins.top+(y*this.squareHeight), this.squareWidth, this.squareHeight);
       }
     }
   }

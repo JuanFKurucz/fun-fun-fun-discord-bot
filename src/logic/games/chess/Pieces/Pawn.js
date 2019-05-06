@@ -57,7 +57,11 @@ const loadImages = async () => {
     "normal":{
       "b":await Drawing.loadImage(__dirname+"/../images/bp.png"),
       "w":await Drawing.loadImage(__dirname+"/../images/wp.png"),
-    }
+    },
+    "mod":{
+      "b":await Drawing.loadImage(__dirname+"/../images/m-bp.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/m-wp.png"),
+    },
   };
 }
 loadImages();

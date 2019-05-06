@@ -50,8 +50,13 @@ const loadImages = async () => {
     "normal":{
       "b":await Drawing.loadImage(__dirname+"/../images/br.png"),
       "w":await Drawing.loadImage(__dirname+"/../images/wr.png"),
+    },
+    "mod":{
+      "b":await Drawing.loadImage(__dirname+"/../images/m-br.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/m-wr.png"),
     }
   };
+  console.log(Rook.images.mod);
 }
 loadImages();
 

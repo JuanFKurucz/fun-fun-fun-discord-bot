@@ -12,29 +12,34 @@ class Knight extends Piece {
   move(board,newCoordinate){
     const newField = board.getPiece(newCoordinate);
     return ((newField && newField.team != this.team) || newField == null) &&
-    (
-      ( Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==1 &&
-      Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==2
-    ) ||
-    (
-      Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==2 &&
-      Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==1
-    )
-  );
-}
+      (
+        ( Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==1 &&
+        Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==2
+      ) ||
+      (
+        Math.abs(newCoordinate.cordLetter-this.coordinate.cordLetter)==2 &&
+        Math.abs(newCoordinate.cordNumber-this.coordinate.cordNumber)==1
+      )
+    );
+  }
 
-getImage(type="normal"){
-  return Knight.images[type][this.team];
-}
+  getImage(type="normal"){
+    return Knight.images[type][this.team];
+  }
 }
 
 Knight.type="n";
 const loadImages = async () => {
+  console.log("Knight");
   Knight.images = {
     "normal":{
       "b":await Drawing.loadImage(__dirname+"/../images/bn.png"),
       "w":await Drawing.loadImage(__dirname+"/../images/wn.png"),
-    }
+    },
+    "mod":{
+      "b":await Drawing.loadImage(__dirname+"/../images/m-bn.png"),
+      "w":await Drawing.loadImage(__dirname+"/../images/m-wn.png"),
+    },
   };
 }
 loadImages();
