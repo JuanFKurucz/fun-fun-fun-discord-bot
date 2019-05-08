@@ -112,29 +112,31 @@ module.exports = class Bot {
         msg.reply(wrongly[0].reason);
       }
       for(let w in words){
-        const word = words[w];
-        dict.spellSuggest(word,async function(err, correct, suggestion, origWord){
-          console.log(err, correct, suggestion, origWord);
-          // because "calor" is not a defined word in the US English dictionary
-          // the output will be: null, false, "carol", 'calor'
-          if(correct == false){
-            msg.reply(origWord+" is misspelled, here it is a suggestion: "+suggestion);
-            try{
-              await msg.react("🇼");
-              await msg.react("🇷");
-              await msg.react("🇴");
-              await msg.react("🇳");
-              await msg.react("🇬");
-            } catch(e){
-              const newName = origWord+" is misspelled (UNBLOCK THE BOT)";
-              if(newName.length<=32){
-                msg.guild.members.get(msg.author.id).setNickname(newName);
-              } else {
-                msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
+        const word = words[w].replace(/[^a-z]/gi, '');
+        if(word.length){
+          dict.spellSuggest(word,async function(err, correct, suggestion, origWord){
+            console.log(err, correct, suggestion, origWord);
+            // because "calor" is not a defined word in the US English dictionary
+            // the output will be: null, false, "carol", 'calor'
+            if(correct == false){
+              msg.reply(origWord+" is misspelled, here it is a suggestion: "+suggestion);
+              try{
+                await msg.react("🇼");
+                await msg.react("🇷");
+                await msg.react("🇴");
+                await msg.react("🇳");
+                await msg.react("🇬");
+              } catch(e){
+                const newName = origWord+" is misspelled (UNBLOCK THE BOT)";
+                if(newName.length<=32){
+                  msg.guild.members.get(msg.author.id).setNickname(newName);
+                } else {
+                  msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
+                }
               }
             }
-          }
-        });
+          });
+        }
         /*
         if(SpellChecker.isMisspelled(word)){
           const corrections = SpellChecker.getCorrectionsForMisspelling(word);
