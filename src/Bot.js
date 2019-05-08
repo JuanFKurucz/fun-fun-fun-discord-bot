@@ -98,7 +98,7 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    if(msg.channel.id=="166679130228785152"){//}&& msg.author.id!="162355874570960896"){
+    if(msg.channel.id=="166679130228785152" && msg.author.id!="162355874570960896"){
       let reacted=false;
       const words = text.split(" ");
       const wrongly = writeGood(text);
@@ -124,7 +124,7 @@ module.exports = class Bot {
           await msg.react("🇴");
           await msg.react("🇳");
           await msg.react("🇬");
-        } catch(e){          
+        } catch(e){
           msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
         }
       }
