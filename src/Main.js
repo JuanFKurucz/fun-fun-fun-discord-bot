@@ -51,17 +51,24 @@ module.exports = class Main {
 
     Logger.init(this.data["level"],this.data["maxTrace"],false);
     console.log("Logger started");
+    /*if(this.data["database"]){
+      const opciones = config("database","options");
+      global.db = await mysql.createConnection({
+        host:opciones.host,
+        user:opciones.user,
+        password:opciones.password,
+        database:opciones.database
+      });
 
-    const opciones = config("database","options");
-    global.db = await mysql.createConnection({
-      host:opciones.host,
-      user:opciones.user,
-      password:opciones.password,
-      database:opciones.database
-    });
-
-    db.connect();
-    global.query = util.promisify(db.query).bind(db);
+      db.connect();
+      global.query = util.promisify(db.query).bind(db);
+    }*/
+    global.db = function(){
+      return null;
+    }
+    global.query = function(){
+      return null;
+    }
     console.log("Configuration of Logger at level "+Logger.get().getLevel(),1);
   }
 

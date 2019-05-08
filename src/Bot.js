@@ -13,6 +13,7 @@ Logic = require(__dirname+"/logic/Logic.js"),
 {config} = require("./Configuration.js"),
 Graph = require("./graph/Graph.js");
 const Server = require("./logic/Server.js");
+const SpellChecker = require('spellchecker');
 
 let BotObject = null;
 
@@ -96,8 +97,33 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    if(msg.author.id=="419293643598200832" && text.includes("*")){
-      await msg.delete(10000);
+    if(msg.channel.id=="166679130228785152" && msg.author.id!="162355874570960896"){
+      const words = text.split(" ");
+      for(let w in words){
+        const word = words[w];
+        if(SpellChecker.isMisspelled(word)){
+          const corrections = SpellChecker.getCorrectionsForMisspelling(word);
+          if(corrections.length){
+            msg.reply(word+" is misspelled, here are some possibles corrections: "+corrections.join(", "));
+          }
+        }
+      }
+    }
+    /*if(text.split(" ").length==1 && msg.author.id=="162355874570960896"){
+      const cleanText = text.replace(/[^a-z]/gi, '');
+      console.info(cleanText);
+      msg.channel.fetchMessages({ limit: 10 })
+      .then((messages) => {
+        const mm = messages.array();
+        console.info(mm);
+        for(let m in mm){
+          console.info(mm[m].id != msg.id,mm[m].content.includes(cleanText));
+          if(mm[m].id != msg.id && mm[m].content.includes(cleanText)){
+            msg.delete(100);
+          }
+        }
+      })
+      .catch(console.info);
     } else {
       const server = await this.logic.getServer(msg.channel.guild.id);
       const boolDesignatedChannel = server.channels.hasOwnProperty(msg.channel.id);
@@ -113,7 +139,7 @@ module.exports = class Bot {
 
         await this.logic.getCommand(command[0],user).execute(response,user,command); //gets the command using the first string in the splitteed message and executes it
       }
-    }
+    }*/
     return response;
   }
 
