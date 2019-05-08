@@ -14,6 +14,7 @@ Logic = require(__dirname+"/logic/Logic.js"),
 Graph = require("./graph/Graph.js");
 const Server = require("./logic/Server.js");
 const SpellChecker = require('spellchecker');
+const writeGood = require('write-good');
 
 let BotObject = null;
 
@@ -97,14 +98,36 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    if(msg.channel.id=="166679130228785152" && msg.author.id!="162355874570960896"){
+    if(msg.channel.id=="166679130228785152"){//}&& msg.author.id!="162355874570960896"){
+      let reacted=false;
       const words = text.split(" ");
+      const wrongly = writeGood(text);
+      console.info(wrongly);
+      if(wrongly.length){
+        msg.reply(wrongly[0].reason);
+      }
       for(let w in words){
         const word = words[w];
         if(SpellChecker.isMisspelled(word)){
           const corrections = SpellChecker.getCorrectionsForMisspelling(word);
           if(corrections.length){
-            msg.reply(word+" is misspelled, here are some possibles corrections: "+corrections.join(", "));
+            msg.reply(word+" is misspelled, here are some possible corrections: "+corrections.join(", "));
+            if(reacted){
+              try{
+                await msg.react("🇼");
+                await msg.react("🇷");
+                await msg.react("🇴");
+                await msg.react("🇳");
+                await msg.react("🇬");
+              } catch(e){
+                const newName = word+" is misspelled (UNBLOCK THE BOT)";
+                if(newName.length<=32){
+                  msg.guild.members.get(msg.author.id).setNickname(newName);
+                } else {
+                  msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
+                }
+              }
+            }
           }
         }
       }
