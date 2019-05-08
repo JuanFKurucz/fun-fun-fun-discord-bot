@@ -124,13 +124,8 @@ module.exports = class Bot {
           await msg.react("🇴");
           await msg.react("🇳");
           await msg.react("🇬");
-        } catch(e){
-          const newName = word+" is misspelled (UNBLOCK THE BOT)";
-          if(newName.length<=32){
-            msg.guild.members.get(msg.author.id).setNickname(newName);
-          } else {
-            msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
-          }
+        } catch(e){          
+          msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
         }
       }
     }
