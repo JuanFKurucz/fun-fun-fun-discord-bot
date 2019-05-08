@@ -15,6 +15,11 @@ Graph = require("./graph/Graph.js");
 const Server = require("./logic/Server.js");
 const SpellChecker = require('spellchecker');
 const writeGood = require('write-good');
+const nodehun = require('nodehun');
+const fs = require("fs");
+var affbuf = fs.readFileSync(__dirname+'/en_US.aff');
+var dictbuf = fs.readFileSync(__dirname+'/en_US.dic');
+var dict = new nodehun(affbuf,dictbuf);
 
 let BotObject = null;
 
@@ -108,6 +113,29 @@ module.exports = class Bot {
       }
       for(let w in words){
         const word = words[w];
+        dict.spellSuggest(word,async function(err, correct, suggestion, origWord){
+          console.log(err, correct, suggestion, origWord);
+          // because "calor" is not a defined word in the US English dictionary
+          // the output will be: null, false, "carol", 'calor'
+          if(correct == false){
+            msg.reply(origWord+" is misspelled, here it is a suggestion: "+suggestion);
+            try{
+              await msg.react("🇼");
+              await msg.react("🇷");
+              await msg.react("🇴");
+              await msg.react("🇳");
+              await msg.react("🇬");
+            } catch(e){
+              const newName = origWord+" is misspelled (UNBLOCK THE BOT)";
+              if(newName.length<=32){
+                msg.guild.members.get(msg.author.id).setNickname(newName);
+              } else {
+                msg.guild.members.get(msg.author.id).setNickname("YOU ARE WRONG (UNBLOCK THE BOT)");
+              }
+            }
+          }
+        });
+        /*
         if(SpellChecker.isMisspelled(word)){
           const corrections = SpellChecker.getCorrectionsForMisspelling(word);
           if(corrections.length){
@@ -130,6 +158,7 @@ module.exports = class Bot {
             }
           }
         }
+        */
       }
     }
     /*if(text.split(" ").length==1 && msg.author.id=="162355874570960896"){
