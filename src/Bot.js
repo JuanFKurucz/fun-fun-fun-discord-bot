@@ -96,21 +96,24 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    const server = await this.logic.getServer(msg.channel.guild.id);
-    const boolDesignatedChannel = server.channels.hasOwnProperty(msg.channel.id);
-    if(this.isACommand(text) || boolDesignatedChannel){
-      response = new Message(msg.channel.guild.id,msg.channel.id,user); //Instances a new discord RichEmbed;
-      console.log(msg.author.id +" sent "+msg.content,1);
-      command = text.toLowerCase().split(" ");
-      if(boolDesignatedChannel){
-        command.unshift(this.prefix+server.channels[msg.channel.id]);
+    if(msg.author.id=="419293643598200832" && text.includes("*")){
+      await msg.delete(10000);
+    } else {
+      const server = await this.logic.getServer(msg.channel.guild.id);
+      const boolDesignatedChannel = server.channels.hasOwnProperty(msg.channel.id);
+      if(this.isACommand(text) || boolDesignatedChannel){
+        response = new Message(msg.channel.guild.id,msg.channel.id,user); //Instances a new discord RichEmbed;
+        console.log(msg.author.id +" sent "+msg.content,1);
+        command = text.toLowerCase().split(" ");
+        if(boolDesignatedChannel){
+          command.unshift(this.prefix+server.channels[msg.channel.id]);
+        }
+        command[0] = command[0].substring(this.prefix.length,command[0].length); //Splits the text of the message in spaces removing the prefix out of it
+        console.time();
+
+        await this.logic.getCommand(command[0],user).execute(response,user,command); //gets the command using the first string in the splitteed message and executes it
       }
-      command[0] = command[0].substring(this.prefix.length,command[0].length); //Splits the text of the message in spaces removing the prefix out of it
-      console.time();
-
-      await this.logic.getCommand(command[0],user).execute(response,user,command); //gets the command using the first string in the splitteed message and executes it
     }
-
     return response;
   }
 
