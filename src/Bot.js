@@ -98,7 +98,7 @@ module.exports = class Bot {
     let permissionLevel = (msg.member.hasPermission("ADMINISTRATOR")) ? 1 : 0;
     user.setPermission(permissionLevel);
 
-    if(msg.channel.id=="166679130228785152" && msg.author.id!="162355874570960896"){
+    if(msg.channel.id=="166679130228785152" && msg.author.id=="419293643598200832"){
       let reacted=false;
       const words = text.split(" ");
       const wrongly = writeGood(text);
