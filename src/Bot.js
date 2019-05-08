@@ -15,10 +15,6 @@ Graph = require("./graph/Graph.js");
 const Server = require("./logic/Server.js");
 const SpellChecker = require('spellchecker');
 const writeGood = require('write-good');
-const nodehun = require('nodehun');
-var affbuf = fs.readFileSync(somedirectory+'/en_US.aff');
-var dictbuf = fs.readFileSync(somedirectory+'/en_US.dic');
-var dict = new nodehun(affbuf,dictbuf);
 
 let BotObject = null;
 
